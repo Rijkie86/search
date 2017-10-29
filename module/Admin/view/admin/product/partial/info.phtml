@@ -1,0 +1,67 @@
+<div class="box-body">
+	<div class="form-group">
+		<label>Naam</label> <?php echo $this->formrow($this->form->get('name')); ?>
+	</div>
+	<div class="form-group">
+		<label>Description</label> <?php echo $this->formrow($this->form->get('description')); ?>
+	</div>
+	<table class="table">
+        <thead>
+            <tr>
+                <th class="text-uppercase">property</th>
+                <th class="text-uppercase">value</th>
+                <th class="text-uppercase">table column</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            foreach ($this->productEntity->getProperty() as $oProperty) {
+                echo '
+                    <tr>
+                        <td>' . $oProperty->getName() . '</td>
+                        <td>' . $oProperty->getValue() .'</td>
+                        <td>
+                            <a href="#" class="column" data-type="select" data-pk="' . $oProperty->getId() . '" data-url="/post" data-title="Select">Select</a>
+                        </td>
+                    </tr>
+                ';
+                
+//                 echo '
+//                     <div class="form-group">
+//                         <div class="row">
+//                             <div class="col-xs-3">
+//                                 <strong>' . $oProperty->get('name')->getValue() . '</strong>
+//                             </div>
+//                             <div class="col-xs-9">
+//                                 ' . $this->formrow($oProperty->get('value')) . '
+//                             </div>
+//                         </div>
+//                     </div>
+//                 ';
+            }
+            ?>
+        </tbody>
+    </table>
+</div>
+<div class="box-footer">
+	<button type="submit" class="btn btn-primary">Submit</button>
+</div>
+<?php
+$this->inlineScript()->captureStart();
+echo <<<JS
+    $(document).ready(function() {
+        $('table').DataTable();
+
+        $('.column').editable({
+            source: [
+              {value: 1, text: 'Active'},
+              {value: 2, text: 'Blocked'},
+              {value: 3, text: 'Deleted'}
+           ]
+        });
+    });
+JS;
+$this->inlineScript()->captureEnd();
+
+echo $this->inlineScript();
+?>

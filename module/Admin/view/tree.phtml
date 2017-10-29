@@ -1,0 +1,121 @@
+<div id="jstree_demo">
+  <?php
+  echo '<ul style="list-style-type: none;">';
+    $buildCategoryList = function($categories) use (&$buildCategoryList){
+      foreach($categories as $categoryEntity) :
+        echo '<li id="'.$categoryEntity->getId().'">';
+          echo $categoryEntity->getName();
+
+          $children = $categoryEntity->getChildren();
+
+          if($children->isEmpty() === false) :
+            echo '<ul style="list-style-type: none;">';
+              $buildCategoryList($children);
+            echo '</ul>';
+          endif;
+        echo '</li>';
+      endforeach;
+    };
+
+    $buildCategoryList($this->categories);
+
+  echo '</ul>';
+  ?>
+</div>
+
+<?php
+
+
+$this->inlinescript()->appendFile('https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js');
+$this->inlinescript()->captureStart();
+echo <<<JS
+    $(function () {
+	$('#jstree_demo').jstree({
+  "core" : {
+    "animation" : 0,
+    "check_callback" : true,
+    "themes" : { "stripes" : true },
+  },
+  "types" : {
+    "#" : {
+      "max_children" : 1,
+      "max_depth" : 4,
+      "valid_children" : ["root"]
+    },
+    "root" : {
+      "icon" : "/static/3.3.3/assets/images/tree_icon.png",
+      "valid_children" : ["default"]
+    },
+    "default" : {
+      "valid_children" : ["default","file"]
+    },
+    "file" : {
+      "icon" : "glyphicon glyphicon-file",
+      "valid_children" : []
+    }
+  },
+  "checkbox": {
+    "three_state": false,
+    "cascade": "upundetermined"
+  },
+  "plugins" : [
+    "checkbox", "contextmenu", "dnd", "search", "sort", "types", "wholerow"
+  ]
+});
+
+	$('#jstree_demo').on('create_node.jstree', function(e, data) {
+		$.post({
+			url: '/admin/category/createAjax',
+			data: {
+				parentId: data.parent
+			},
+			success: function(returnValue) {
+				$('#jstree_demo').jstree(true).set_id(data.node,returnValue.categoryId);
+			}
+		});
+	});
+
+	$('#jstree_demo').on('rename_node.jstree', function(e, data) {
+		$.post({
+			url: '/admin/category/renameAjax',
+			data: {
+				node: data.node
+			}
+		});
+	});
+
+	$('#jstree_demo').on('delete_node.jstree', function(e, data) {
+		$.post({
+			url: '/admin/category/deleteAjax',
+			data: {
+				node: data.node
+			}
+		});
+	});
+
+  $('.btn-primary').click(function(){
+    $.post({
+			url: '/admin/category/linkAjax/{$this->feedCategoryValueId}',
+			data: {
+				selectedNodes: $('#jstree_demo').jstree('get_selected')
+			}
+		});
+  });
+
+  var checked_ids = [], checked_ids1 = [];
+  $("#jstree_demo").find(".jstree-undetermined").each(
+      function(i, element) {
+          var nodeId = $(element).closest('.jstree-node').attr("id");
+          // alert( nodeId );
+          checked_ids.push( nodeId );
+          checked_ids1.push( $('#jstree_demo').jstree().get_node( nodeId ).text );
+      }
+  );
+
+  console.log(checked_ids);
+  console.log(checked_ids1);
+});
+
+JS;
+$this->inlinescript()->captureEnd();
+?>

@@ -1,0 +1,118 @@
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+	<!-- Content Header (Page header) -->
+	<section class="content-header">
+		<h1>
+			Data Tables <small>advanced tables</small>
+		</h1>
+		<ol class="breadcrumb">
+			<li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+			<li><a href="#">Tables</a></li>
+			<li class="active">Data tables</li>
+		</ol>
+	</section>
+
+	<!-- Main content -->
+	<section class="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="box">
+					<div class="box-header">
+						<h3 class="box-title">Hover Data Table</h3>
+					</div>
+					<!-- /.box-header -->
+					<div class="box-body">
+						<table id="matching" class="table table-bordered table-hover">
+							<thead>
+								<tr>
+									<th>Oud</th>
+									<th>Nieuw</th>
+								</tr>
+							</thead>
+							<tfoot>
+								<tr>
+									<th>Oud</th>
+									<th>Nieuw</th>
+								</tr>
+							</tfoot>
+						</table>
+					</div>
+					<!-- /.box-body -->
+				</div>
+				<!-- /.box -->
+			</div>
+			<!-- /.col -->
+		</div>
+		<!-- /.row -->
+	</section>
+	<!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Choose category</h4>
+      </div>
+      <div class="modal-body">
+        <!-- HTML Markup (Parent) -->
+<select id="cat-id" class="form-control input-xs">
+    <option id="">Select ...</option>
+    <?php
+    foreach($this->categories as $category){
+        echo '<option value="'.$category->getId().'">'.$category->getName().'</option>';
+    }
+    ?>
+</select>
+ 
+<!-- HTML Markup (Child # 1) -->
+<select id="subcat-id" class="form-control input-xs">
+    <option id="">Select ...</option>
+    <!-- other options -->
+</select>
+ 
+<!-- HTML Markup (Child # 2) -->
+<select id="prod-id" class="form-control input-xs">
+    <option id="">Select ...</option>
+    <!-- other options -->
+</select>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<?php
+$this->inlinescript()->captureStart();
+echo <<<JS
+    $(document).ready(function(){
+
+        $("#subcat-id").depdrop({
+            url: '/admin/category/test',
+            depends: ['cat-id']
+        });
+
+        $("#prod-id").depdrop({
+            url: '/admin/category/test',
+            depends: ['cat-id', 'subcat-id']
+        });
+
+        $.fn.editable.defaults.mode = 'popup';
+    
+        $('#matching').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "ajax": "/admin/category/matching",
+            "initComplete": function(){
+                $('.editable').editable();
+            }
+        });
+    });
+JS;
+$this->inlinescript()->captureEnd();

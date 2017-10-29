@@ -1,0 +1,13 @@
+.icons .fa
+{
+	margin-right: 8px;
+}
+
+icons.last-child
+{
+	margin-right: 0px;
+}
+
+.table-responsive {
+  overflow-x: initial !important;
+}

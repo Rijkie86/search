@@ -1,0 +1,67 @@
+<div class="content-wrapper">
+	<section class="content-header">
+		<h1>Productfeeds</h1>
+		<ol class="breadcrumb">
+			<li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+		</ol>
+	</section>
+	<section class="content">
+		<div class="box">
+			<div class="box-body">
+				<table id="example2" class="table table-bordered table-hover">
+					<thead>
+						<tr>
+							<th></th>
+							<th>ID</th>
+							<th>Program ID</th>
+							<th>Product count</th>
+						</tr>
+					</thead>
+					<tbody>
+                        <?php
+                        if (! empty($this->feeds) && is_array($this->feeds)) {
+                            foreach ($this->feeds as $feed) {
+                                echo '
+                                    <tr>
+                                        <td>
+                                            <div class="icons">
+                                                ' . (! $feed->getProduct()->isEmpty() ? 
+                                                '<i class="fa fa-play" aria-hidden="true" style="color: green; disabled: disabled;"></i>' : 
+                                                '<a href="' . $this->url('application', ['action' => 'insert-products', 'id' => $feed->getProgramId()]) . '"><i class="fa fa-play" aria-hidden="true" style="color: red; disabled: disabled;"></i></a>') . '
+
+                                                ' . (! $feed->getProduct()->isEmpty() ? 
+                                                '<i class="fa fa-check-circle" data-toggle="tooltip" data-placement="top" title="Laatste run: 18-10-2016" aria-hidden="true" style="color: green;"></i>' : 
+                                                '<i class="fa fa-check-circle" data-toggle="tooltip" data-placement="top" title="No data available" aria-hidden="true" style="color: red;"></i>') . '
+                                            </div>
+                                        </td>
+                                        <td>' . $feed->getId() . '</td>
+                                        <td>' . $feed->getProgramId() . '</td>
+                                        <td>' . $feed->getProductCount() . '</td>
+                                    </tr>
+                                ';
+                            }
+                        }
+                        ?>
+                    </tbody>
+					<tfoot>
+						<tr>
+							<th></th>
+							<th>ID</th>
+							<th>Program ID</th>
+							<th>Product count</th>
+						</tr>
+					</tfoot>
+				</table>
+			</div>
+		</div>
+	</section>
+</div>
+
+<?php
+$this->inlinescript()->captureStart();
+echo <<<JS
+    $(document).ready(function(){
+       $('#example2').DataTable();
+    })
+JS;
+$this->inlinescript()->captureEnd();

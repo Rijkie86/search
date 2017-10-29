@@ -1,0 +1,27 @@
+<?php $this->form->prepare(); echo $this->form()->openTag($this->form); ?>
+<div class="box-body">
+	<div class="form-group">
+		<label>Naam</label> <?php echo $this->formrow($this->form->get('name')); ?>
+</div>
+<?php
+foreach ($this->form->get('property') as $oProperty) {
+    echo '
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <strong>' . $oProperty->get('name')->getValue() . '</strong>
+                            </div>
+                            <div class="col-xs-9">
+                                ' . $this->formrow($oProperty->get('value')) . '
+                            </div>
+                        </div>
+                    </div>
+                ';
+}
+?>
+</div>
+							<div class="box-footer">
+								<button type="submit" class="btn btn-primary">Submit</button>
+							</div>
+					<?php echo $this->form()->closeTag(); ?>
+</div>

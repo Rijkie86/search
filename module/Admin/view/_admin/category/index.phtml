@@ -1,0 +1,68 @@
+<div class="content-wrapper" style="min-height: 916px;">
+	<!-- Content Header (Page header) -->
+	<section class="content-header">
+		<h1>
+			Categorie&euml;n
+		</h1>
+		<ol class="breadcrumb">
+			<li><a href="#"><i class="fa fa-dashboard"></i> Admin</a></li>
+			<li class="active">categorie&euml;n</li>
+		</ol>
+	</section>
+
+	<!-- Main content -->
+	<section class="content">
+
+
+		<!-- Main row -->
+		<div class="row">
+		<button type="button" class="btn btn-success btn-sm" onclick="demo_create();"><i class="glyphicon glyphicon-asterisk"></i> Create</button>
+		<div id="jstree_demo">
+            <?php
+            if (! empty($this->categories) && is_array($this->categories)) {
+                echo '<ul>';
+                foreach ($this->categories as $category) {
+                    $childs = null;
+                    if ($category->getChildren() > 0) {
+                        $childs = '<ul>';
+                        foreach ($category->getChildren() as $child) {
+                            $childs .= '
+                                <li>
+                                    ' . $child->getName() . '
+                                </li>
+                            ';
+                        }
+                        $childs .= '</ul>';
+                    }
+                    
+                    echo '
+                        <li>
+                            ' . $category->getName() . '
+                            ' . $childs . '
+                        </li>
+                    ';
+                }
+                echo '</ul>';
+            }
+            ?>
+        </div>
+</div></section></div>
+
+<?php
+$this->inlinescript()->appendFile('https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js');
+$this->inlinescript()->captureStart();
+echo <<<JS
+    $(function () {
+        $('#jstree_demo').jstree();
+			    
+	    function demo_create() {
+    		var CurrentNode = jQuery("#jstree_demo").jstree("get_selected");
+            var id = $("#jstree_demo").jstree('create_node', CurrentNode, value, 'last');
+    	};
+    });
+
+    
+JS;
+$this->inlinescript()->captureEnd();
+// <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+?>

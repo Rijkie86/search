@@ -1,0 +1,57 @@
+
+<div class="box box-info">
+	<div class="box-header with-border">
+		<h3 class="box-title">Programs</h3>
+
+		<div class="box-tools pull-right">
+			<button type="button" class="btn btn-box-tool" data-widget="collapse">
+				<i class="fa fa-minus"></i>
+			</button>
+			<button type="button" class="btn btn-box-tool" data-widget="remove">
+				<i class="fa fa-times"></i>
+			</button>
+		</div>
+	</div>
+	<!-- /.box-header -->
+	<div class="box-body">
+		<div class="table-responsive">
+			<table class="table no-margin">
+				<thead>
+					<tr>
+						<th>DIN</th>
+						<th>Name</th>
+						<th>QUALITY</th>
+					</tr>
+				</thead>
+				<tbody>
+    				<?php
+        foreach ($this->bolts as $bolt) {
+            echo '
+                            <tr>
+        						<td>' . $bolt->getDin()->getName() . '</td>
+        						<td>' . $bolt->getName() . '</td>
+                                <td>' . $bolt->getQuality() . '</td>
+        					</tr>
+                        ';
+        }
+        ?>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="box-footer clearfix">
+		<a href="/admin/object/create/1"
+			class="btn btn-sm btn-info btn-flat pull-left">New record</a> <a
+			href="javascript:void(0)"
+			class="btn btn-sm btn-default btn-flat pull-right">View all</a>
+	</div>
+</div>
+
+<?php
+$this->inlinescript()->captureStart();
+echo <<<JS
+    $(document).ready(function() {
+        $(table).DataTable();
+    });
+JS;
+$this->inlinescript()->captureEnd();

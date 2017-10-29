@@ -1,0 +1,26 @@
+<?php
+echo '<ul class="sidebar-menu"><li class="header">MAIN NAVIGATION</li>';
+foreach ($this->container as $page) {
+    
+    $subTree = null;
+    if ($page->hasPages()) {
+        $subTree = '<ul class="treeview-menu menu-open" style="display: block;">';
+        foreach ($page->getPages() as $child) {
+            $subTree .= '
+                <li><a href="' . $child->getHref() . '"><i class="fa fa-circle-o"></i> ' . $child->getLabel() . '</a></li>
+            ';
+        }
+        $subTree .= '</ul>';
+    }
+    echo '
+        <li class="treeview">
+            <a href=" ' . $page->getHref() . '">
+                <i class="fa fa-dashboard"></i>
+                <span>' . $page->getLabel() . '</span>
+                <i class="fa fa-angle-left pull-right"></i>
+            </a>
+            ' . $subTree . '
+        </li>
+    ';
+}
+echo '</ul>';

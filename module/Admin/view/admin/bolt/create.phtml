@@ -1,0 +1,51 @@
+<?php
+$this->form->prepare();
+?>
+
+<div class="content-wrapper">
+	<section class="content-header">
+		<h1>Object</h1>
+		<ol class="breadcrumb">
+			<li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+		</ol>
+	</section>
+
+	<section class="content">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="box box-info">
+					<div class="box-header with-border">
+						<h3 class="box-title">Programs</h3>
+						<div class="box-tools pull-right">
+							<button type="button" class="btn btn-box-tool"
+								data-widget="collapse">
+								<i class="fa fa-minus"></i>
+							</button>
+							<button type="button" class="btn btn-box-tool"
+								data-widget="remove">
+								<i class="fa fa-times"></i>
+							</button>
+						</div>
+					</div>
+					<div class="box-body">
+        				<?php
+            echo $this->form()->openTag($this->form);
+            echo '
+                <div class="form-group">
+                    ' . $this->formselect($this->form->get('din')) . '
+                </div>
+                <div class="form-group">
+                    ' . $this->forminput($this->form->get('name')) . '
+                </div>
+            ';
+            ?>
+                    </div>
+					<div class="box-footer">
+						<button type="submit" class="btn btn-primary">Submit</button>
+					</div>
+					<?php echo $this->form()->closeTag(); ?>
+				</div>
+			</div>
+		</div>
+	</section>
+</div>

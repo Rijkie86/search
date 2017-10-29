@@ -1,0 +1,57 @@
+<?php
+$this->form->setAttributes(['id' => 'test', 'class' => 'form-horizontal'])->prepare();
+?>
+
+<div class="modal-dialog">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"
+				aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+			<h4 class="modal-title">Default Modal</h4>
+		</div>
+		<?php echo $this->form()->openTag($this->form); ?>
+		<div class="modal-body">
+			<?php
+			if($this->form->get('boltSize')->getCount() > 0) {
+			    foreach($this->form->get('boltSize') as $boltsize) {
+			        echo $this->formrow($boltsize->get('metric'));
+			        echo $this->formrow($boltsize->get('steelLength'));
+			        echo $this->formrow($boltsize->get('quality'));
+			    }
+			}
+?>
+        </div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default pull-left"
+				data-dismiss="modal">Close</button>
+			<button type="submit" id="form-submit" class="btn btn-primary">Submit</button>
+		</div>
+        <?php echo $this->form()->closeTag(); ?>
+	</div>
+</div>
+
+<?php
+$this->inlinescript()->captureStart();
+echo <<<JS
+$(function() {
+    $('#form-submit').on('click', function(e) {
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "/admin/bolt/add-size/{$this->boltId}",
+            data: $('form').serialize(),
+            success: function(response) {
+            },
+            error: function() {
+                alert('Error');
+            }
+        });
+        return false;
+    });
+});
+JS;
+$this->inlinescript()->captureEnd();
+
+echo $this->inlinescript();
