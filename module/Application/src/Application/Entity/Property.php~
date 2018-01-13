@@ -35,9 +35,9 @@ class Property
 
     /**
      *
-     * @var \Application\Entity\Product @ORM\ManyToOne(targetEntity="Application\Entity\Product")
+     * @var \Application\Entity\Product @ORM\ManyToOne(targetEntity="Application\Entity\Product", inversedBy="property")
      *      @ORM\JoinColumns({
-     *      @ORM\JoinColumn(name="product_id", referencedColumnName="id")
+     *      @ORM\JoinColumn(name="product_id", referencedColumnName="id", onDelete="CASCADE")
      *      })
      */
     private $product;

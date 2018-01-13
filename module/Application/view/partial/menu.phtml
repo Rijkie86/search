@@ -1,19 +1,33 @@
 <?php
+$requestURI = array_filter(explode('/', $_SERVER['REQUEST_URI']));
+
+$displaySetting = null;
+$statusClass = null;
+
 echo '<ul class="sidebar-menu"><li class="header">MAIN NAVIGATION</li>';
 foreach ($this->container as $page) {
-    
     $subTree = null;
+    
+    if(!empty($requestURI)) {
+        $displaySetting = ('/' . $requestURI[1] . '/' . $requestURI[2] == $page->getHref() ? 'block' : 'none');
+        
+        $statusClass = ('/' . $requestURI[1] . '/' . $requestURI[2] == $page->getHref() ? ' active' : null);
+    }
+
     if ($page->hasPages()) {
-        $subTree = '<ul class="treeview-menu menu-open" style="display: block;">';
+        $subTree = '<ul class="treeview-menu" style="display: ' . $displaySetting . ';">';
         foreach ($page->getPages() as $child) {
             $subTree .= '
                 <li><a href="' . $child->getHref() . '"><i class="fa fa-circle-o"></i> ' . $child->getLabel() . '</a></li>
             ';
+            
+            $subTreePages[] = $child->getHref();
         }
         $subTree .= '</ul>';
     }
+
     echo '
-        <li class="treeview">
+        <li class="treeview' . $statusClass . '">
             <a href=" ' . $page->getHref() . '">
                 <i class="fa fa-dashboard"></i>
                 <span>' . $page->getLabel() . '</span>

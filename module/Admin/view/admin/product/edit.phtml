@@ -11,21 +11,27 @@
 			<div class="col-md-12">
 				<div class="nav-tabs-custom">
 					<ul class="nav nav-tabs">
-						<li><a href="javascript:"
+						<li class="active"><a class="active" href=""
 							data-href="/admin/product/info/<?php echo $this->productId; ?>"
 							data-toggle="tab">Product info</a></li>
-						<li><a href="javascript:"
-							data-href="/admin/product/images/<?php echo $this->productId; ?>"
-							data-toggle="tab">Images</a></li>
-						<li><a href="javascript:"
+						<li><a href=""
+							data-href="/admin/product/media/<?php echo $this->productId; ?>"
+							data-toggle="tab">Media</a></li>
+						<li><a href=""
 							data-href="/admin/product/seo/<?php echo $this->productId; ?>"
 							data-toggle="tab">SEO</a></li>
-						<li><a href="javascript:"
+						<li><a href=""
 							data-href="/admin/product/history/<?php echo $this->productId; ?>"
 							data-toggle="tab">History</a></li>
-						<li><a href="javascript:"
+						<li><a href=""
 							data-href="/admin/product/statistics/<?php echo $this->productId; ?>"
 							data-toggle="tab">Statistics</a></li>
+						<li><a href=""
+							data-href="/admin/product/reviews/<?php echo $this->productId; ?>"
+							data-toggle="tab">Reviews</a></li>
+						<li><a href=""
+							data-href="/admin/product/interests/<?php echo $this->productId; ?>"
+							data-toggle="tab">Interests</a></li>
 					</ul>
 					<div class="tab-content">
 						<div class="tab-pane active" id="tab-content"></div>
@@ -42,13 +48,12 @@
 $this->inlinescript()->captureStart();
 echo <<<JS
 	$(document).ready(function() {
-		$('.nav-tabs a').click(function() {
-			$('#tab-content').load($(this).data('href'), function(response, status, xhr) {
-				console.log(status);
-				console.log(response);
-				console.log(xhr);
-			});
-		});
+        $('#tab-content').load($('a.active').data('href'));
+
+		$('.nav-tabs a').click(function(e) {
+            e.preventDefault();
+			$('#tab-content').load($(this).data('href'));
+        });
 
 		$('#imageTable').DataTable();
 

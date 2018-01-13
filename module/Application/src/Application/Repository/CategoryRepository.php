@@ -11,22 +11,40 @@ class CategoryRepository extends EntityRepository
     {
         return $this->_em->createQuery("SELECT Category FROM Application\Entity\Category Category")->getResult();
     }
-
-    public function getFeedCategoryValues($start, $length)
+    
+    public function findFeedCategoryValue($feedCategoryId, $value)
     {
-      $queryBuilder = $this->_em->createQueryBuilder();
-      $queryBuilder->select('feedCategoryValue', 'category')
-        ->from('Application\Entity\FeedCategoryValue', 'feedCategoryValue')
-        ->leftJoin('feedCategoryValue.category', 'category')
-        ->having('COUNT(category.id) = 0')
-        ->groupBy('feedCategoryValue.id')
-        ->setFirstResult($start)
-        ->setMaxResults($length);
+        $query = $this->_em->createQuery("SELECT feedCategoryValue FROM Application\Entity\FeedCategoryValue feedCategoryValue WHERE feedCategoryValue.feedCategory = :feedCategoryId AND feedCategoryValue.name = :value");
+        $query->setParameters(['feedCategoryId' => $feedCategoryId, 'value' => $value]);
 
-      $query = $queryBuilder->getQuery();
+        return $query->getOneOrNullResult();
+    }
 
-      $paginator = new paginator($query);
+    public function getFeedCategoryValues($filter)
+    {
+        $orderField = $filter['columns'][key($filter['order'])]['name'];
+        $orderDirection = $filter['order'][key($filter['order'])]['dir'];
+        
+        $queryBuilder = $this->_em->createQueryBuilder();
+        $queryBuilder->select('feedCategoryValue', 'category')
+            ->from('Application\Entity\FeedCategoryValue', 'feedCategoryValue')
+            ->leftJoin('feedCategoryValue.category', 'category')
+            ->having('COUNT(category.id) = 0')
+            ->orderBy('feedCategoryValue.' . $orderField, $orderDirection)
+            ->groupBy('feedCategoryValue.id')
+            ->setFirstResult($filter['start'])
+            ->setMaxResults($filter['length']);
+        
+        if (! empty($filter['search']['value'])) {
+            $queryBuilder->where($queryBuilder->expr()
+                ->like('feedCategoryValue.name', $queryBuilder->expr()
+                ->literal('%' . $filter['search']['value'] . '%')));
+        }
+        
+        $query = $queryBuilder->getQuery();
 
-      return $paginator;
+        $paginator = new paginator($query);
+        
+        return $paginator;
     }
 }

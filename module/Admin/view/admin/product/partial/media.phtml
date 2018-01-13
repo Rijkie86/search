@@ -1,0 +1,57 @@
+<?php
+echo '<div class="callout hidden"></div>';
+
+$productImageCollection = $this->productEntity->getProductImage();
+if (! $productImageCollection->isEmpty()) {
+    echo '
+		<table id="imageTable" class="table table-bordered table-hover">
+			<thead>
+				<tr>
+					<td>Image</td>
+					<td>Alt</td>
+					<td>Title</td>
+				</tr>
+			</thead>
+			<tbody>
+	';
+    foreach ($productImageCollection as $productImageEntity) {
+        echo '
+    		<tr>
+                <td><a data-fancybox="gallery" href="' . $productImageEntity->getName() . '"><img src="' . $productImageEntity->getName() . '" style="max-width: 40px;"></a></td>
+                <td>' . ($this->isAllowed('account', 'update-media') ? '<a href="#" id="alt" class="editable" data-type="textarea" data-pk="' . $productImageEntity->getId() . '">' . $productImageEntity->getAlt() . '</a>' : $productImageEntity->getAlt()) . '</td>
+                <td>' . ($this->isAllowed('account', 'update-media') ? '<a href="#" id="title" class="editable" data-type="textarea" data-pk="' . $productImageEntity->getId() . '">' . $productImageEntity->getTitle() . '</a>' : $productImageEntity->getTitle()) . '</td>
+    		</tr>
+    	';
+    }
+    echo '
+			</tbody>
+		</table>
+	';
+}
+
+$this->inlineScript()->captureStart();
+echo <<<JS
+    $(document).ready(function() {
+        $('table').DataTable();
+
+        $.fn.editable.defaults.mode = 'inline';
+
+        $('.editable').editable({
+            url: '/admin/product/update-media/{$this->productEntity->getId()}',
+            success: function(data, config) {
+                if(data.response.id) {
+                    $('.callout').html('Change saved.').addClass('callout-success').removeClass('hidden');
+                } else {
+                    $('.callout').html(data.response).addClass('callout-danger').removeClass('hidden');
+                }
+            },
+            error: function() {
+                console.log('456');
+            },
+        });
+    });
+JS;
+$this->inlineScript()->captureEnd();
+
+echo $this->inlineScript();
+?>

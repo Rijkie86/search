@@ -24,7 +24,7 @@ class CategoryService
     
     public function findAll()
     {
-//         $this->entityManager->find
+        return $this->entityManager->getRepository('Application\Entity\Category')->findAll();
     }
     
     public function exists($categoryId)
@@ -67,9 +67,9 @@ class CategoryService
     
     public function delete()
     {
-        
+
     }
-    
+
     public function rename($nodeData)
     {
         $category = $this->entityManager->find('Application\Entity\Category', $nodeData['id']);
@@ -78,8 +78,8 @@ class CategoryService
         $this->edit($category);
     }
     
-    public function getUnassignedFeedCategoryValues($start = 0, $length = 10)
+    public function getUnassignedFeedCategoryValues($filter)
     {
-        return $this->entityManager->getRepository('Application\Entity\Category')->getFeedCategoryValues($start, $length);
+        return $this->entityManager->getRepository('Application\Entity\Category')->getFeedCategoryValues($filter);
     }
 }

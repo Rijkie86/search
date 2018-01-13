@@ -1,0 +1,24 @@
+<?php echo '<div class="callout hidden"></div>'; ?>
+
+<form role="form">
+	<?php echo $this->form()->openTag($this->form); ?>
+	<div class="box-body">
+		<div class="form-group">
+			<label>Url</label> <?php echo $this->formrow($this->form->get('file')); ?>
+		</div>
+	</div>
+	<div class="box-footer">
+		<button type="submit" class="btn btn-primary">Submit</button>
+	</div>
+	<?php echo $this->form()->closeTag(); ?>
+</form>
+<?php
+$this->inlinescript()->captureStart();
+echo <<<JS
+    $(document).ready(function() {
+        
+    });
+JS;
+$this->inlinescript()->captureEnd();
+
+echo $this->inlinescript();

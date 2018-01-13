@@ -19,7 +19,7 @@ class FeedCategory
      *      @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;
-    
+
     /**
      *
      * @var \Application\Entity\FeedCategory @ORM\OneToMany(targetEntity="Application\Entity\FeedCategoryValue", mappedBy="feedCategory", cascade={"persist"})
@@ -29,6 +29,9 @@ class FeedCategory
     /**
      *
      * @var \Application\Entity\Feed @ORM\OneToOne(targetEntity="Application\Entity\Feed", inversedBy="feedCategory")
+     *      @ORM\JoinColumns({
+     *      @ORM\JoinColumn(name="feed_id", referencedColumnName="id", onDelete="CASCADE")
+     *      })
      */
     private $feed;
 
@@ -65,6 +68,7 @@ class FeedCategory
     {
         return $this->feed;
     }
+
     /**
      * Constructor
      */
@@ -76,21 +80,21 @@ class FeedCategory
     /**
      * Add feedCategoryValue
      *
-     * @param \Application\Entity\FeedCategoryValue $feedCategoryValue
+     * @param \Application\Entity\FeedCategoryValue $feedCategoryValue            
      *
      * @return FeedCategory
      */
     public function addFeedCategoryValue(\Application\Entity\FeedCategoryValue $feedCategoryValue)
     {
         $this->feedCategoryValue[] = $feedCategoryValue;
-
+        
         return $this;
     }
 
     /**
      * Remove feedCategoryValue
      *
-     * @param \Application\Entity\FeedCategoryValue $feedCategoryValue
+     * @param \Application\Entity\FeedCategoryValue $feedCategoryValue            
      */
     public function removeFeedCategoryValue(\Application\Entity\FeedCategoryValue $feedCategoryValue)
     {

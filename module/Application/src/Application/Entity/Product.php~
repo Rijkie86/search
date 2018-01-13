@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\Collection;
 /**
  * Product
  *
- * @ORM\Table(name="product", indexes={@ORM\Index(name="category_id", columns={"category_id"}), @ORM\Index(name="unique_id", columns={"unique_id"})})
+ * @ORM\Table(name="product", indexes={@ORM\Index(name="IDX_D34A04AD51A5BC03", columns={"feed_id"}), @ORM\Index(name="category_id", columns={"category_id"}), @ORM\Index(name="unique_id", columns={"unique_id"})})
  * @ORM\Entity(repositoryClass="Application\Repository\ProductRepository")
  */
 class Product
@@ -23,6 +23,18 @@ class Product
 
     /**
      *
+     * @var string @ORM\Column(name="seo_title", type="string", length=65, nullable=true)
+     */
+    private $seoTitle;
+
+    /**
+     *
+     * @var string @ORM\Column(name="seo_description", type="string", length=230, nullable=true)
+     */
+    private $seoDescription;
+
+    /**
+     *
      * @var string @ORM\Column(name="unique_id", type="string", length=255, nullable=false)
      */
     private $uniqueId;
@@ -35,21 +47,27 @@ class Product
 
     /**
      *
-     * @var string @ORM\Column(name="name", type="string", length=255, nullable=false)
+     * @var string @ORM\Column(name="name", type="string", length=255, nullable=true)
      */
     private $name;
 
     /**
      *
-     * @var string @ORM\Column(name="url", type="string", length=255, nullable=false)
+     * @var string @ORM\Column(name="url", type="string", length=255, nullable=true)
      */
     private $url;
 
     /**
      *
-     * @var string @ORM\Column(name="description", type="text", length=65535, nullable=false)
+     * @var string @ORM\Column(name="description", type="text", length=65535, nullable=true)
      */
     private $description;
+
+    /**
+     *
+     * @var string @ORM\Column(name="price", type="decimal", precision=7, scale=2, nullable=true)
+     */
+    private $price;
 
     /**
      *
@@ -59,7 +77,7 @@ class Product
 
     /**
      *
-     * @var \Application\Entity\Property @ORM\OneToMany(targetEntity="Application\Entity\Property", mappedBy="product", cascade={"persist"})
+     * @var \Application\Entity\Property @ORM\OneToMany(targetEntity="Application\Entity\Property", mappedBy="product", orphanRemoval=true, cascade={"persist", "remove"})
      */
     private $property;
 
@@ -67,19 +85,10 @@ class Product
      *
      * @var \Feed @ORM\ManyToOne(targetEntity="Feed")
      *      @ORM\JoinColumns({
-     *      @ORM\JoinColumn(name="feed_id", referencedColumnName="id")
+     *      @ORM\JoinColumn(name="feed_id", referencedColumnName="id", onDelete="CASCADE")
      *      })
      */
     private $feed;
-
-    /**
-     *
-     * @var \Brand @ORM\ManyToOne(targetEntity="Brand")
-     *      @ORM\JoinColumns({
-     *      @ORM\JoinColumn(name="brand_id", referencedColumnName="id")
-     *      })
-     */
-    private $brand;
 
     /**
      *
@@ -107,9 +116,9 @@ class Product
 
     /**
      *
-     * @var string @ORM\Column(name="status", type="string", length=255, nullable=false)
+     * @var boolean @ORM\Column(name="status", type="boolean", nullable=false)
      */
-    private $status = 'Active';
+    private $status = '1';
 
     /**
      *
@@ -121,14 +130,46 @@ class Product
     private $category;
 
     /**
-     * Constructor
+     *
+     * @var \Doctrine\Common\Collections\Collection @ORM\ManyToMany(targetEntity="Brand", inversedBy="product", cascade={"persist"})
+     *      @ORM\JoinTable(name="rel_product_brand",
+     *      joinColumns={
+     *      @ORM\JoinColumn(name="product_id", referencedColumnName="id", onDelete="CASCADE")
+     *      },
+     *      inverseJoinColumns={
+     *      @ORM\JoinColumn(name="brand_id", referencedColumnName="id", onDelete="CASCADE")
+     *      }
+     *      )
      */
-    public function __construct()
-    {
-        $this->productImage = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->property = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->feed = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+    private $brand;
+
+    /**
+     *
+     * @var \Doctrine\Common\Collections\Collection @ORM\ManyToMany(targetEntity="FeedCategoryValue", inversedBy="product", cascade={"persist"})
+     *      @ORM\JoinTable(name="rel_product_feed_category_value",
+     *      joinColumns={
+     *      @ORM\JoinColumn(name="product_id", referencedColumnName="id", onDelete="CASCADE")
+     *      },
+     *      inverseJoinColumns={
+     *      @ORM\JoinColumn(name="feed_category_value_id", referencedColumnName="id", onDelete="CASCADE")
+     *      }
+     *      )
+     */
+    private $feedCategoryValue;
+
+    /**
+     *
+     * @var \Doctrine\Common\Collections\Collection @ORM\ManyToMany(targetEntity="Accommodation", inversedBy="product", cascade={"persist"})
+     *      @ORM\JoinTable(name="rel_product_accommodation",
+     *      joinColumns={
+     *      @ORM\JoinColumn(name="product_id", referencedColumnName="id", onDelete="CASCADE")
+     *      },
+     *      inverseJoinColumns={
+     *      @ORM\JoinColumn(name="accommodation_id", referencedColumnName="id", onDelete="CASCADE")
+     *      }
+     *      )
+     */
+    private $accommodation;
 
     /**
      * Get id
@@ -186,54 +227,6 @@ class Product
     public function getProgramId()
     {
         return $this->programId;
-    }
-
-    /**
-     * Set name
-     *
-     * @param string $name            
-     *
-     * @return Product
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-        
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * Set url
-     *
-     * @param string $url            
-     *
-     * @return Product
-     */
-    public function setUrl($url)
-    {
-        $this->url = $url;
-        
-        return $this;
-    }
-
-    /**
-     * Get url
-     *
-     * @return string
-     */
-    public function getUrl()
-    {
-        return $this->url;
     }
 
     /**
@@ -401,30 +394,6 @@ class Product
     }
 
     /**
-     * Set status
-     *
-     * @param string $status            
-     *
-     * @return Product
-     */
-    public function setStatus($status)
-    {
-        $this->status = $status;
-        
-        return $this;
-    }
-
-    /**
-     * Get status
-     *
-     * @return string
-     */
-    public function getStatus()
-    {
-        return $this->status;
-    }
-
-    /**
      * Set createdBy
      *
      * @param integer $createdBy            
@@ -494,5 +463,287 @@ class Product
     public function getFeed()
     {
         return $this->feed;
+    }
+
+    /**
+     * Add brand
+     *
+     * @param \Application\Entity\Brand $brand            
+     *
+     * @return Product
+     */
+    public function addBrand(\Application\Entity\Brand $brand)
+    {
+        if ($this->brand->contains($brand)) {
+            return;
+        }
+        
+        $this->brand->add($brand);
+        $brand->addProduct($this);
+    }
+
+    /**
+     * Remove brand
+     *
+     * @param \Application\Entity\Brand $brand            
+     */
+    public function removeBrand(\Application\Entity\Brand $brand)
+    {
+        if (! $this->brand->contains($brand)) {
+            return;
+        }
+        
+        $this->brand->removeElement($brand);
+        $brand->removeProduct($this);
+    }
+
+    /**
+     * Get brand
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getBrand()
+    {
+        return $this->brand;
+    }
+
+    /**
+     * Add feedCategoryValue
+     *
+     * @param \Application\Entity\FeedCategoryValue $feedCategoryValue            
+     *
+     * @return Product
+     */
+    public function addFeedCategoryValue(\Application\Entity\FeedCategoryValue $feedCategoryValue)
+    {
+        if ($this->feedCategoryValue->contains($feedCategoryValue)) {
+            return;
+        }
+        
+        $this->feedCategoryValue->add($feedCategoryValue);
+        $feedCategoryValue->addProduct($this);
+    }
+
+    /**
+     * Remove feedCategoryValue
+     *
+     * @param \Application\Entity\FeedCategoryValue $feedCategoryValue            
+     */
+    public function removeFeedCategoryValue(\Application\Entity\FeedCategoryValue $feedCategoryValue)
+    {
+        if (! $this->feedCategoryValue->contains($feedCategoryValue)) {
+            return;
+        }
+        
+        $this->feedCategoryValue->removeElement($feedCategoryValue);
+        $feedCategoryValue->removeProduct($this);
+    }
+
+    /**
+     * Get feedCategoryValue
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getFeedCategoryValue()
+    {
+        return $this->feedCategoryValue;
+    }
+
+    /**
+     * Set price
+     *
+     * @param string $price            
+     *
+     * @return Product
+     */
+    public function setPrice($price)
+    {
+        $this->price = $price;
+        
+        return $this;
+    }
+
+    /**
+     * Get price
+     *
+     * @return string
+     */
+    public function getPrice()
+    {
+        return $this->price;
+    }
+
+    /**
+     * Set status
+     *
+     * @param boolean $status            
+     *
+     * @return Product
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+        
+        return $this;
+    }
+
+    /**
+     * Get status
+     *
+     * @return boolean
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * Set name
+     *
+     * @param string $name            
+     *
+     * @return Product
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+        
+        return $this;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Set url
+     *
+     * @param string $url            
+     *
+     * @return Product
+     */
+    public function setUrl($url)
+    {
+        $this->url = $url;
+        
+        return $this;
+    }
+
+    /**
+     * Get url
+     *
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * Set seoTitle
+     *
+     * @param string $seoTitle            
+     *
+     * @return Product
+     */
+    public function setSeoTitle($seoTitle)
+    {
+        $this->seoTitle = $seoTitle;
+        
+        return $this;
+    }
+
+    /**
+     * Get seoTitle
+     *
+     * @return string
+     */
+    public function getSeoTitle()
+    {
+        return $this->seoTitle;
+    }
+
+    /**
+     * Set seoDescription
+     *
+     * @param string $seoDescription            
+     *
+     * @return Product
+     */
+    public function setSeoDescription($seoDescription)
+    {
+        $this->seoDescription = $seoDescription;
+        
+        return $this;
+    }
+
+    /**
+     * Get seoDescription
+     *
+     * @return string
+     */
+    public function getSeoDescription()
+    {
+        return $this->seoDescription;
+    }
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->productImage = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->property = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->brand = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->feedCategoryValue = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->accommodation = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add accommodation
+     *
+     * @param \Application\Entity\Accommodation $accommodation            
+     *
+     * @return Product
+     */
+    public function addAccommodation(\Application\Entity\Accommodation $accommodation)
+    {
+        if ($this->accommodation->contains($accommodation)) {
+            return;
+        }
+        
+        $this->accommodation->add($accommodation);
+        $accommodation->addProduct($this);
+    }
+
+    /**
+     * Remove accommodation
+     *
+     * @param \Application\Entity\Accommodation $accommodation            
+     */
+    public function removeAccommodation(\Application\Entity\Accommodation $accommodation)
+    {
+        if (! $this->accommodation->contains($accommodation)) {
+            return;
+        }
+        
+        $this->accommodation->removeElement($accommodation);
+        $accommodation->removeProduct($this);
+    }
+
+    /**
+     * Get accommodation
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getAccommodation()
+    {
+        return $this->accommodation;
     }
 }

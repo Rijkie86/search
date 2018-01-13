@@ -64,10 +64,10 @@ class Product extends \Application\Entity\Product implements \Doctrine\ORM\Proxy
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return ['__isInitialized__', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'id', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'uniqueId', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'programId', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'name', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'url', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'description', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'productImage', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'property', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'feed', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'createdBy', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'modifiedBy', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'creationDate', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'modifiedDate', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'status', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'category'];
+            return ['__isInitialized__', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'id', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'seoTitle', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'seoDescription', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'uniqueId', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'programId', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'name', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'url', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'description', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'price', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'productImage', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'property', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'feed', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'createdBy', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'modifiedBy', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'creationDate', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'modifiedDate', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'status', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'category', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'brand', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'feedCategoryValue', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'accommodation'];
         }
 
-        return ['__isInitialized__', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'id', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'uniqueId', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'programId', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'name', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'url', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'description', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'productImage', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'property', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'feed', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'createdBy', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'modifiedBy', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'creationDate', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'modifiedDate', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'status', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'category'];
+        return ['__isInitialized__', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'id', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'seoTitle', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'seoDescription', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'uniqueId', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'programId', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'name', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'url', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'description', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'price', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'productImage', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'property', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'feed', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'createdBy', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'modifiedBy', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'creationDate', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'modifiedDate', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'status', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'category', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'brand', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'feedCategoryValue', '' . "\0" . 'Application\\Entity\\Product' . "\0" . 'accommodation'];
     }
 
     /**
@@ -235,50 +235,6 @@ class Product extends \Application\Entity\Product implements \Doctrine\ORM\Proxy
     /**
      * {@inheritDoc}
      */
-    public function setName($name)
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setName', [$name]);
-
-        return parent::setName($name);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getName()
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getName', []);
-
-        return parent::getName();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setUrl($url)
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setUrl', [$url]);
-
-        return parent::setUrl($url);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getUrl()
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getUrl', []);
-
-        return parent::getUrl();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function setDescription($description)
     {
 
@@ -433,28 +389,6 @@ class Product extends \Application\Entity\Product implements \Doctrine\ORM\Proxy
     /**
      * {@inheritDoc}
      */
-    public function setStatus($status)
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setStatus', [$status]);
-
-        return parent::setStatus($status);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getStatus()
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getStatus', []);
-
-        return parent::getStatus();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function setCreatedBy($createdBy)
     {
 
@@ -516,6 +450,237 @@ class Product extends \Application\Entity\Product implements \Doctrine\ORM\Proxy
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getFeed', []);
 
         return parent::getFeed();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function addBrand(\Application\Entity\Brand $brand)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'addBrand', [$brand]);
+
+        return parent::addBrand($brand);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removeBrand(\Application\Entity\Brand $brand)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeBrand', [$brand]);
+
+        return parent::removeBrand($brand);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getBrand()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getBrand', []);
+
+        return parent::getBrand();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function addFeedCategoryValue(\Application\Entity\FeedCategoryValue $feedCategoryValue)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'addFeedCategoryValue', [$feedCategoryValue]);
+
+        return parent::addFeedCategoryValue($feedCategoryValue);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removeFeedCategoryValue(\Application\Entity\FeedCategoryValue $feedCategoryValue)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeFeedCategoryValue', [$feedCategoryValue]);
+
+        return parent::removeFeedCategoryValue($feedCategoryValue);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getFeedCategoryValue()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getFeedCategoryValue', []);
+
+        return parent::getFeedCategoryValue();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setPrice($price)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setPrice', [$price]);
+
+        return parent::setPrice($price);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getPrice()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getPrice', []);
+
+        return parent::getPrice();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setStatus($status)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setStatus', [$status]);
+
+        return parent::setStatus($status);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getStatus()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getStatus', []);
+
+        return parent::getStatus();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setName($name)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setName', [$name]);
+
+        return parent::setName($name);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getName()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getName', []);
+
+        return parent::getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setUrl($url)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setUrl', [$url]);
+
+        return parent::setUrl($url);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getUrl()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getUrl', []);
+
+        return parent::getUrl();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setSeoTitle($seoTitle)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setSeoTitle', [$seoTitle]);
+
+        return parent::setSeoTitle($seoTitle);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getSeoTitle()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getSeoTitle', []);
+
+        return parent::getSeoTitle();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setSeoDescription($seoDescription)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setSeoDescription', [$seoDescription]);
+
+        return parent::setSeoDescription($seoDescription);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getSeoDescription()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getSeoDescription', []);
+
+        return parent::getSeoDescription();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function addAccommodation(\Application\Entity\Accommodation $accommodation)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'addAccommodation', [$accommodation]);
+
+        return parent::addAccommodation($accommodation);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removeAccommodation(\Application\Entity\Accommodation $accommodation)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeAccommodation', [$accommodation]);
+
+        return parent::removeAccommodation($accommodation);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getAccommodation()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getAccommodation', []);
+
+        return parent::getAccommodation();
     }
 
 }

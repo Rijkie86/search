@@ -1,0 +1,42 @@
+<div class="content-wrapper">
+	<section class="content-header">
+		<h1>
+			Feed <small>update</small>
+		</h1>
+		<ol class="breadcrumb">
+			<li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+		</ol>
+	</section>
+	
+	<section class="content">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="nav-tabs-custom">
+					<ul class="nav nav-tabs">
+						<li class="active"><a class="active" href=""
+							data-href="/admin/feed/settings/<?php echo $this->feedId; ?>"
+							data-toggle="tab"><?php echo $this->translate('Settings'); ?></a></li>
+					</ul>
+					<div class="tab-content">
+						<div class="tab-pane active" id="tab-content"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</div>
+
+<?php
+$this->inlinescript()->captureStart();
+echo <<<JS
+    $(document).ready(function() {
+        $('#tab-content').load($('a.active').data('href'));
+
+		$('.nav-tabs a').click(function(e) {
+            e.preventDefault();
+
+			$('#tab-content').load($(this).data('href'));
+        });
+    });
+JS;
+$this->inlinescript()->captureEnd();

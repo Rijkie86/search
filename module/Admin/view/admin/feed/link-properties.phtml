@@ -1,0 +1,71 @@
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal"
+		aria-label="Close">
+		<span aria-hidden="true">&times;</span>
+	</button>
+	<h4 class="modal-title" id="myModalLabel">Link</h4>
+</div>
+<div class="modal-body">
+	<div class="callout hidden"></div>
+	<?php
+$this->form->prepare();
+echo $this->form()->openTag($this->form);
+echo '
+	<div class="form-group">
+        <label for="exampleInputEmail1">Label</label>
+        ' . $this->formselect($this->form->get('listObject')) . '
+    </div>
+    <div class="form-group">
+        <label for="">Label 2</label>
+        ' . $this->formselect($this->form->get('dbTableProperty')) . '
+    </div>
+    ';
+echo $this->form()->closeTag();
+?>
+</div>
+<div class="modal-footer">
+	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	<button type="submit" id="save" class="btn btn-primary">Save changes</button>
+</div>
+
+<?php
+$selectedListObject = $this->feedProductProperty->getListObject();
+$listObjectHasValue = false;
+if ($selectedListObject != null) {
+    $listObjectHasValue = true;
+}
+
+$selectedDbTableProperty = $this->feedProductProperty->getDbTableProperty();
+
+$this->inlinescript()->prependFile('https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/js/select2.min.js');
+$this->inlinescript()->captureStart();
+echo <<<JS
+    $(document).ready(function() {
+        var selectedListObjects = $('#listObject').val();
+
+        $('#listObject').select2();
+        $('#dbTableProperty').select2();
+
+        new Select2Cascade($('#listObject'), $('#dbTableProperty'), '/admin/feed/get-properties/:parentId:', [], '$selectedDbTableProperty');
+
+        if('{$listObjectHasValue}' == true) {
+            $('#listObject').select().trigger('change');
+        }
+
+        $('#save').click(function(event) {
+            event.preventDefault();
+
+            $.post('/admin/feed/link-properties-ajax/$this->feedId-$this->propertyId', $('form').serialize(), function(data) {
+                console.log(data)
+                if(data.return === true) {
+                    $('.callout').html('Change saved.').addClass('callout-success').removeClass('hidden');
+                } else {
+                    $('.callout').html(data.return).addClass('callout-danger').removeClass('hidden');
+                }
+            }, 'json')
+        })
+    });
+JS;
+$this->inlinescript()->captureEnd();
+
+echo $this->inlinescript();

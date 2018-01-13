@@ -1,6 +1,8 @@
 <?php
 namespace Application;
 
+use Zend\ServiceManager\AbstractPluginManager;
+
 class Module
 {
 
@@ -8,14 +10,23 @@ class Module
     {
         $application = $e->getApplication();
         
-        $sm = $application->getServiceManager();
+        $serviceManager = $application->getServiceManager();
+        $authenticationService = $serviceManager->get('Zend\Authentication\AuthenticationService');
         
-        $doctrineEntityManager = $sm->get('doctrine.entitymanager.orm_default');
-        
-        $doctrineEventManager = $doctrineEntityManager->getEventManager();
-        $doctrineEventManager->addEventListener(array(
-            \Doctrine\ORM\Events::onFlush,
-        ), new \Application\Entity\Listener\MyEntityListener($sm));
+        $authenticatedUser = $authenticationService->getIdentity();
+
+        if (php_sapi_name() != 'cli') {
+            if ($authenticatedUser == null && $e->getRequest()
+                ->getUri()
+                ->getPath() !== '/login') {
+                    $response = $e->getResponse();
+                    $response->getHeaders()->addHeaderLine('Location', '/login');
+                    $response->setStatusCode(301);
+                    $response->sendHeaders();
+                    
+                    return $response;
+                }
+        }
     }
 
     public function getAutoloaderConfig()
@@ -43,5 +54,18 @@ class Module
                 }
             ]
         ];
+    }
+
+    public function getControllerPluginConfig()
+    {
+        return array(
+            'factories' => array(
+                'isAllowed' => function ($serviceManager) {
+                    $authorize = $serviceManager->get('authorize');
+
+                    return new Controller\Plugin\IsAllowed($authorize);
+                }
+            )
+        );
     }
 }

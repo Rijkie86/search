@@ -1,0 +1,40 @@
+<div class="content-wrapper">
+	<section class="content-header">
+		<h1>
+			Account <small>add</small>
+		</h1>
+		<ol class="breadcrumb">
+			<li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+		</ol>
+	</section>
+
+	<section class="content">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="box box-primary">
+				    <?php echo $this->form()->openTag($this->form); ?>
+						<div class="box-body">
+						<div class="form-group">
+							<label>E-mail address</label> <?php echo $this->formrow($this->form->get('email')); ?>
+						</div>
+					</div>
+					<div class="box-footer">
+						<button type="submit" class="btn btn-primary">Submit</button>
+					</div>
+					<?php echo $this->form()->closeTag(); ?>
+				</div>
+			</div>
+		</div>
+	</section>
+</div>
+
+<?php
+$this->inlinescript()->captureStart();
+echo <<<JS
+    $(document).ready(function(){
+        $('.select2').select2();
+
+        $('textarea').froalaEditor();
+    });
+JS;
+$this->inlinescript()->captureEnd();

@@ -1,15 +1,40 @@
+<?php echo '<div class="callout hidden"></div>'; ?>
+
 <form role="form">
-  <div class="box-body">
-    <div class="form-group">
-      <label for="">Title</label>
-      <input type="text" class="form-control input-xs" id="" placeholder="Enter title">
-    </div>
-    <div class="form-group">
-      <label for="">Meta description</label>
-      <textarea class="form-control" rows="3" placeholder="Enter meta description"></textarea>
-    </div>
-  </div>
-  <div class="box-footer">
-    <button type="submit" class="btn btn-primary">Submit</button>
-  </div>
+	<div class="box-body">
+		<div class="form-group">
+			<label for="">Title</label>
+			<div id="seoTitle" class="form-control editable" data-type="text"
+				data-pk="<?php echo $this->productEntity->getId(); ?>" data-tpl="<input type='text' maxlength='65'>"><?php echo $this->productEntity->getSeoTitle(); ?></div>
+				<p class="form-text text-muted"></p>
+		</div>
+		<div class="form-group">
+			<label for="">Meta description</label>
+			<div id="seoDescription" class="form-control editable" data-type="textarea"
+				data-pk="<?php echo $this->productEntity->getId(); ?>" data-tpl="<textarea maxlength='230'></textarea>"><?php echo $this->productEntity->getSeoDescription(); ?></div>
+				<p class="form-text text-muted"></p>
+		</div>
+	</div>
 </form>
+<?php
+$this->inlinescript()->captureStart();
+echo <<<JS
+    $(document).ready(function() {
+        $('.editable').editable({
+            url: '/admin/product/update-seo/{$this->productEntity->getId()}',
+            success: function(data, config) {
+                if(data.response.id) {
+                    $('.callout').html('Change saved.').addClass('callout-success').removeClass('hidden');
+                } else {
+                    $('.callout').html(data.response).addClass('callout-danger').removeClass('hidden');
+                }
+            },
+            error: function() {
+                console.log('456');
+            },
+        });
+    });
+JS;
+$this->inlinescript()->captureEnd();
+
+echo $this->inlinescript();

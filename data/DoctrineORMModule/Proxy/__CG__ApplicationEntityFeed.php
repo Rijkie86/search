@@ -64,10 +64,10 @@ class Feed extends \Application\Entity\Feed implements \Doctrine\ORM\Proxy\Proxy
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return ['__isInitialized__', '' . "\0" . 'Application\\Entity\\Feed' . "\0" . 'id', '' . "\0" . 'Application\\Entity\\Feed' . "\0" . 'programId', '' . "\0" . 'Application\\Entity\\Feed' . "\0" . 'productCount', '' . "\0" . 'Application\\Entity\\Feed' . "\0" . 'file', '' . "\0" . 'Application\\Entity\\Feed' . "\0" . 'feedCategory', '' . "\0" . 'Application\\Entity\\Feed' . "\0" . 'feedProductProperty'];
+            return ['__isInitialized__', '' . "\0" . 'Application\\Entity\\Feed' . "\0" . 'id', '' . "\0" . 'Application\\Entity\\Feed' . "\0" . 'programId', '' . "\0" . 'Application\\Entity\\Feed' . "\0" . 'productCount', '' . "\0" . 'Application\\Entity\\Feed' . "\0" . 'file', '' . "\0" . 'Application\\Entity\\Feed' . "\0" . 'lastRun', '' . "\0" . 'Application\\Entity\\Feed' . "\0" . 'feedCategory', '' . "\0" . 'Application\\Entity\\Feed' . "\0" . 'feedProductProperty'];
         }
 
-        return ['__isInitialized__', '' . "\0" . 'Application\\Entity\\Feed' . "\0" . 'id', '' . "\0" . 'Application\\Entity\\Feed' . "\0" . 'programId', '' . "\0" . 'Application\\Entity\\Feed' . "\0" . 'productCount', '' . "\0" . 'Application\\Entity\\Feed' . "\0" . 'file', '' . "\0" . 'Application\\Entity\\Feed' . "\0" . 'feedCategory', '' . "\0" . 'Application\\Entity\\Feed' . "\0" . 'feedProductProperty'];
+        return ['__isInitialized__', '' . "\0" . 'Application\\Entity\\Feed' . "\0" . 'id', '' . "\0" . 'Application\\Entity\\Feed' . "\0" . 'programId', '' . "\0" . 'Application\\Entity\\Feed' . "\0" . 'productCount', '' . "\0" . 'Application\\Entity\\Feed' . "\0" . 'file', '' . "\0" . 'Application\\Entity\\Feed' . "\0" . 'lastRun', '' . "\0" . 'Application\\Entity\\Feed' . "\0" . 'feedCategory', '' . "\0" . 'Application\\Entity\\Feed' . "\0" . 'feedProductProperty'];
     }
 
     /**
@@ -307,6 +307,28 @@ class Feed extends \Application\Entity\Feed implements \Doctrine\ORM\Proxy\Proxy
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getFeedProductProperty', []);
 
         return parent::getFeedProductProperty();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setLastRun($lastRun)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setLastRun', [$lastRun]);
+
+        return parent::setLastRun($lastRun);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getLastRun()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getLastRun', []);
+
+        return parent::getLastRun();
     }
 
 }

@@ -40,7 +40,7 @@ class ProductImage
 
     /**
      *
-     * @var \Application\Entity\Product @ORM\ManyToOne(targetEntity="Application\Entity\Product")
+     * @var \Application\Entity\Product @ORM\ManyToOne(targetEntity="Application\Entity\Product", inversedBy="productImage")
      *      @ORM\JoinColumns({
      *      @ORM\JoinColumn(name="product_id", referencedColumnName="id", onDelete="CASCADE")
      *      })

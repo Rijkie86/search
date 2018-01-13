@@ -43,11 +43,13 @@
 						<table id="matching" class="table table-bordered table-hover display responsive no-wrap" width="100%">
 							<thead>
 								<tr>
+									<th>Program ID</th>
 									<th>Category</th>
 								</tr>
 							</thead>
 							<tfoot>
 								<tr>
+									<th>Program ID</th>
 									<th>Category</th>
 								</tr>
 							</tfoot>
@@ -79,6 +81,10 @@ echo <<<JS
             "type": "POST",
             "url": "/admin/category/matching"
         },
+        "columns": [
+            { "name": "name" },
+            { "name": "name" }
+        ],
         "initComplete": function(){
           $('.editable').editable();
         }

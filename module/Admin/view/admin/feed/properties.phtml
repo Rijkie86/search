@@ -1,3 +1,6 @@
+<?php
+use Zend\Form\Element;
+?>
 <div class="content-wrapper">
 	<section class="content-header">
 		<h1>Productfeeds</h1>
@@ -14,23 +17,49 @@
 						<tr>
 							<th>ID</th>
 							<th>Name</th>
-							<th></th>
+							<th>Assignment status</th>
+							<th>Status</th>
+							<th><?php echo $this->translate('Locked'); ?></th>
 						</tr>
 					</thead>
 					<tbody>
                         <?php
                         foreach ($this->feed->getFeedProductProperty() as $property) {
-                            echo '
-                                <tr>
-                                    <td>' . $property->getId() . '</td>
-                                    <td>' . $property->getName() . '</td>
-                                    <td>
-                                        <button type="button" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal">
-                                            Assign
-                                        </button>
-                                    </td>
-                                </tr>
-                            ';
+                            $dbTable = $property->getListObject();
+                            $dbTableProperty = $property->getDbTableProperty();
+                            
+                            $buttonText = 'Not assigned';
+                            $buttonClass = 'btn btn-danger btn-xs';
+                            
+                            if ($dbTable !== null && $dbTableProperty !== null) {
+                                $buttonText = 'Assigned';
+                                $buttonClass = 'btn btn-success btn-xs';
+                            }
+                            
+                            $attributes = null;
+                            if ($this->isAllowed('feed', 'feed-link-properties')) {
+                                $buttonClass .= ' load';
+                                $attributes = 'data-href="/admin/feed/link-properties/' . $this->feed->getId() . '-' . $property->getId() . '" data-toggle="modal" data-target="#myModal"';
+                            }
+                            
+                            $locked = new Element\Checkbox();
+                            $locked->setName('locked')->setValue($property->getLocked());
+                            
+//                             if ($property->getLocked() == 0) {
+                                echo '
+                                    <tr>
+                                        <td>' . $property->getId() . '</td>
+                                        <td>' . $property->getName() . '</td>
+                                        <td>
+                                            <a class="' . $buttonClass . '" ' . $attributes . '>
+                                                ' . $buttonText . '
+                                            </a>
+                                        </td>
+                                        <td>' . $property->getActive() . '</td>
+                                        <td>' . $this->formCheckbox($locked) . '</td>
+                                    </tr>
+                                ';
+//                             }
                         }
                         ?>
                     </tbody>
@@ -38,7 +67,9 @@
 						<tr>
 							<th>ID</th>
 							<th>Name</th>
-							<th></th>
+							<th>Assignment status</th>
+							<th>Status</th>
+							<th><?php echo $this->translate('Locked'); ?></th>
 						</tr>
 					</tfoot>
 				</table>
@@ -50,43 +81,20 @@
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog"
 	aria-labelledby="myModalLabel">
 	<div class="modal-dialog" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal"
-					aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-				<h4 class="modal-title" id="myModalLabel">Modal title</h4>
-			</div>
-			<div class="modal-body">
-				<form class="form-horizontal">
-					<div class="form-group">
-						<label for="inputEmail3" class="col-sm-2 control-label">Table</label>
-						<div class="col-sm-10">
-							<select class="form-control"><option value="brand">Brand (brand)</option></select>
-						</div>
-					</div>
-					<div class="form-group">
-						<label for="inputPassword3" class="col-sm-2 control-label">Property</label>
-						<div class="col-sm-10">
-							<select class="form-control"><option value="name">name</option></select>
-						</div>
-					</div>
-				</form>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-				<button type="button" class="btn btn-primary">Save changes</button>
-			</div>
-		</div>
+		<div class="modal-content"></div>
 	</div>
 </div>
 
 <?php
 $this->inlinescript()->captureStart();
 echo <<<JS
-    $(document).ready(function(){
-       $('table').DataTable();
-    })
+    $(document).ready(function() {
+        $('a.load').click(function() {
+            console.log('123');
+			$('.modal-content').load($(this).data('href'));
+        });
+
+        $('table').DataTable();
+    });
 JS;
 $this->inlinescript()->captureEnd();

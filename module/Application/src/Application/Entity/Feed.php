@@ -31,20 +31,25 @@ class Feed
      * @var integer @ORM\Column(name="product_count", type="integer", nullable=true)
      */
     private $productCount;
-    
+
     /**
-     * @var string
      *
-     * @ORM\Column(name="file", type="string", length=255, nullable=false)
+     * @var string @ORM\Column(name="file", type="string", length=255, nullable=false)
      */
     private $file;
-    
+
+    /**
+     *
+     * @var \DateTime @ORM\Column(name="last_run", type="datetime", nullable=true)
+     */
+    private $lastRun;
+
     /**
      *
      * @var \Application\Entity\Feed @ORM\OneToOne(targetEntity="Application\Entity\FeedCategory", mappedBy="feed", cascade={"persist"})
      */
     private $feedCategory;
-    
+
     /**
      *
      * @var \Feed @ORM\OneToMany(targetEntity="FeedProductProperty", mappedBy="feed", cascade={"persist"})
@@ -112,14 +117,14 @@ class Feed
     /**
      * Set file
      *
-     * @param string $file
+     * @param string $file            
      *
      * @return Feed
      */
     public function setFile($file)
     {
         $this->file = $file;
-
+        
         return $this;
     }
 
@@ -136,14 +141,14 @@ class Feed
     /**
      * Set feedCategory
      *
-     * @param \Application\Entity\FeedCategory $feedCategory
+     * @param \Application\Entity\FeedCategory $feedCategory            
      *
      * @return Feed
      */
     public function setFeedCategory(\Application\Entity\FeedCategory $feedCategory = null)
     {
         $this->feedCategory = $feedCategory;
-
+        
         return $this;
     }
 
@@ -156,32 +161,25 @@ class Feed
     {
         return $this->feedCategory;
     }
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->feedProductProperty = new \Doctrine\Common\Collections\ArrayCollection();
-    }
 
     /**
      * Add feedProductProperty
      *
-     * @param \Application\Entity\FeedProductProperty $feedProductProperty
+     * @param \Application\Entity\FeedProductProperty $feedProductProperty            
      *
      * @return Feed
      */
     public function addFeedProductProperty(\Application\Entity\FeedProductProperty $feedProductProperty)
     {
         $this->feedProductProperty[] = $feedProductProperty;
-
+        
         return $this;
     }
 
     /**
      * Remove feedProductProperty
      *
-     * @param \Application\Entity\FeedProductProperty $feedProductProperty
+     * @param \Application\Entity\FeedProductProperty $feedProductProperty            
      */
     public function removeFeedProductProperty(\Application\Entity\FeedProductProperty $feedProductProperty)
     {
@@ -196,5 +194,36 @@ class Feed
     public function getFeedProductProperty()
     {
         return $this->feedProductProperty;
+    }
+
+    /**
+     * Set lastRun
+     *
+     * @param \DateTime $lastRun            
+     *
+     * @return Feed
+     */
+    public function setLastRun($lastRun)
+    {
+        $this->lastRun = $lastRun;
+        
+        return $this;
+    }
+
+    /**
+     * Get lastRun
+     *
+     * @return \DateTime
+     */
+    public function getLastRun()
+    {
+        return $this->lastRun;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->feedProductProperty = new \Doctrine\Common\Collections\ArrayCollection();
     }
 }

@@ -12,6 +12,8 @@ use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Zend\View\Model\ViewModel;
 use Application\Entity\Log;
 use Application\Entity\FeedProductProperty;
+use Doctrine\Common\Collections\Criteria;
+use Application\Entity\Brand;
 ini_set('memory_limit', '-1');
 
 class ConsoleController extends AbstractActionController
@@ -30,13 +32,26 @@ class ConsoleController extends AbstractActionController
         $this->productService = $productService;
         
         $this->entityManager = $entityManager;
-        
-        $elasticaClient = new \Elastica\Client();
     }
 
-    public function __destruct()
+    public function promotioncodeAction()
     {
-        $this->productService->clean();
+        echo 'Invalid XML.';
+        // $file = 'https://export.daisycon.com/publishers/65420/material/promotioncodes/xml?username=erik.mij%40gmail.com&token=741c82d9fc7235f3fb7f32314559aab47038a0008835c8ca&language=nl&media_id=234775&program_id=&locale_id=1&category_id=&subscription_status=approved';
+        // parse_str(parse_url($file, PHP_URL_QUERY), $queryData);
+        
+        // $fp = fopen('public/xml/promotioncode.xml', 'w');
+        
+        // $options = array(
+        // CURLOPT_FILE => $fp,
+        // CURLOPT_TIMEOUT => 28800,
+        // CURLOPT_URL => $file
+        // );
+        
+        // $ch = curl_init();
+        // curl_setopt_array($ch, $options);
+        // curl_exec($ch);
+        // curl_close($ch);
     }
 
     public function feedListAction()
@@ -68,12 +83,6 @@ class ConsoleController extends AbstractActionController
             curl_close($ch);
         }
         
-        // $log = new Log();
-        // $log->setValue('New XML file download.');
-        
-        // $this->entityManager->persist($log);
-        // $this->entityManager->flush();
-        
         return false;
     }
 
@@ -84,13 +93,7 @@ class ConsoleController extends AbstractActionController
         $toBeDeleted = [];
         
         foreach ($this->feeds as $feed) {
-            /**
-             *
-             * @todo : Can be removed later when there are no available feed with an empty file column.
-             */
-            if (! filter_var($feed->getFile(), FILTER_VALIDATE_URL)) {
-                continue;
-            }
+            $feedProductPropertyCollection = $feed->getFeedProductProperty();
             
             parse_str(parse_url($feed->getFile(), PHP_URL_QUERY), $queryData);
             
@@ -126,50 +129,33 @@ class ConsoleController extends AbstractActionController
             
             if (! empty($properties) && is_array($properties)) {
                 foreach ($properties as $property) {
-                    $feedProductProperty = new FeedProductProperty();
-                    $feedProductProperty->setFeed($feed)->setName($property);
+                    $exists = $feedProductPropertyCollection->exists(function ($test, $element) use ($feed, $property) {
+                        return $element->getName() == $property && $element->getFeed() === $feed;
+                    });
                     
-                    $feed->addFeedProductProperty($feedProductProperty);
+                    if (! $exists) {
+                        $feedProductProperty = new FeedProductProperty();
+                        $feedProductProperty->setFeed($feed)->setName($property);
+                        
+                        $feed->addFeedProductProperty($feedProductProperty);
+                    }
                 }
             }
             
-            $this->feedService->edit($feed);
-            
-            //
-            // }
-            
-            // $bIsValid = true;
-            // }
-            // }
-            
-            // if ($bIsValid === false) {
-            // $toBeDeleted[] = $feed;
-            // }
-            
-            // $xmlReader->close();
+            $this->feedService->update($feed);
         }
-        
-        // if (! empty($toBeDeleted)) {
-        // $this->feedService->deleteAll($toBeDeleted);
-        // }
         
         return false;
     }
 
     public function insertProductsAction()
     {
+        $start = microtime(true);
+        
         $this->feeds = $this->feedService->findAll();
         
         $filterIds = [];
         foreach ($this->feeds as $feed) {
-            /**
-             *
-             * @todo : Can be removed later when there are no available feed with an empty file column.
-             */
-            if (! filter_var($feed->getFile(), FILTER_VALIDATE_URL)) {
-                continue;
-            }
-            
             parse_str(parse_url($feed->getFile(), PHP_URL_QUERY), $queryData);
             
             $xmlReader = new \XMLReader();
@@ -217,111 +203,32 @@ class ConsoleController extends AbstractActionController
                     
                     $productImages = $this->feedService->getProductImages($productNode);
                     $productProperties = $this->feedService->getProductProperties($productNode);
-                    $productCategories[] = $this->feedService->getProductCategories($productNode);
+                    $productCategories = $this->feedService->getProductCategories($productNode);
                     
                     $productEntity = $this->productService->findOneBy([
                         'uniqueId' => $updateProperties['daisycon_unique_id']
                     ]);
                     
-                    if (! empty($productImages)) {
-                        // $productProperties['images'] = $productImages;
-                    }
-                    
                     if ($productEntity == null) {
-                        $this->insert($updateProperties, $productProperties, $productImages, $programId);
+                        $productId = $this->insert($updateProperties, $productProperties, $productImages, $programId);
                     } else {
-                        if (! empty($categories)) {
-                            // $productProperties['categories'] = implode('{__}', $categories);
-                        }
-                        $this->update($productEntity, $productProperties, $productImages, []);
-                    /**
-                     * , $productCategories*
-                     */
+                        $productId = $productEntity->getId();
+                        
+                        $this->update($productEntity, $productProperties, $productImages, $productCategories);
                     }
                 }
-                
-                // $xmlReader->close();
             }
             
-            // $this->deactivateProducts($a);
+            $this->feedService->updateLastRun($feedId, new \DateTime());
             
-            $categories = array_unique(array_reduce($productCategories, 'array_merge', []));
+            $end = microtime(true);
             
-            // $categoriesForFeed = $this->categoryService->findBy(['program_id' => $programId]);
+            $execution_time = ($end - $start);
             
-            // var_dump(get_class($categoriesForFeed));die;
-            
-            foreach ($categories as $category) {
-                if (! $this->feedService->exists($feedId, $category)) {
-                    $this->feedService->addFeedCategoryValue($feedId, $category);
-                }
-            }
-            
-            // $this->addFeedCategory($programId, $categories);
+            echo '<b>Total Execution Time:</b> ' . $execution_time . ' seconds for feed: ' . $feedId . PHP_EOL;
         }
         
         return false;
-    }
-
-    private function deactivateProduct($uniqueId)
-    {
-        throw new \Exception('Build this function');
-    }
-
-    private function deactivateProducts($uniqueIds)
-    {
-        if (! empty($uniqueIds) && is_array($uniqueIds)) {
-            foreach ($uniqueIds as $uniqueId) {
-                $this->deactivateProduct($uniqueId);
-            }
-        }
-    }
-
-    private function getFeedCategoryValues($collection)
-    {
-        $categories = [];
-        
-        foreach ($collection as $entity) {
-            $categories[$entity->getId()] = $entity->getName();
-        }
-        
-        return $categories;
-    }
-
-    private function addFeedCategory($programId, $categories)
-    {
-        // $feed = $this->entityManager->getRepository('Application\Entity\Feed')->findOneBy([
-        // 'programId' => $programId
-        // ]);
-        $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->select('f')
-            ->from('Application\Entity\Feed', 'f')
-            ->where('f.programId = ?1')
-            ->setParameter(1, $programId);
-        
-        $query = $queryBuilder->getQuery();
-        $result = $query->getResult();
-        $feed = $result[0];
-        
-        // \Doctrine\Common\Util\Debug::dump($feed);die;
-        
-        $feedCategory = $feed->getFeedCategory();
-        
-        if ($feedCategory !== null) {
-            $feedCategoryValue = $feedCategory->getFeedCategoryValue();
-            
-            if ($feedCategoryValue->isEmpty()) {
-                // die('1');
-                $this->insertFeedCategory($feed, $categories);
-            } else {
-                $currentCategories = $this->getFeedCategoryValues($feedCategoryValue);
-                
-                $this->compareFeedCategories($currentCategories, $categories);
-            }
-        } else {
-            // die('3');
-            $this->insertFeedCategory($feed, $categories);
-        }
     }
 
     private function insert($updateProperties, $productProperties, $productImages, $programId)
@@ -332,6 +239,8 @@ class ConsoleController extends AbstractActionController
             'programId' => $programId
         ]);
         
+        $feedProductProperty = $feed->getFeedProductProperty();
+        
         /**
          *
          * @todo : Remove setCategory
@@ -340,10 +249,7 @@ class ConsoleController extends AbstractActionController
         $productEntity = new \Application\Entity\Product();
         $productEntity->setUniqueId($updateProperties['daisycon_unique_id'])
             ->setFeed($feed)
-            ->setName($productProperties['title'])
             ->setProgramId($feed->getProgramId())
-            ->setUrl($productProperties['link'])
-            ->setDescription($productProperties['description'])
             ->setCategory($this->entityManager->getReference('Application\Entity\Category', 4));
         
         foreach ($productImages as $key => $value) {
@@ -354,6 +260,9 @@ class ConsoleController extends AbstractActionController
         }
         
         foreach ($productProperties as $key => $value) {
+            
+            $matchedProperty = false;
+            
             /*
              * @todo ...
              */
@@ -361,123 +270,128 @@ class ConsoleController extends AbstractActionController
                 continue;
             }
             
-            $propertyEntity = new \Application\Entity\Property();
-            $propertyEntity->setProduct($productEntity)
-                ->setName($key)
-                ->setValue($value);
+            /**
+             *
+             * @todo $feedProductProperty needs to provide information how to handle the properties
+             *       new object, foreign key etc...
+             */
+            $exists = $feedProductProperty->exists(function ($Hanneke, $element) use ($key) {
+                if ($element->getName() == $key && $element->getListObject() != null && $element->getDbTableProperty() != null) {
+                    return true;
+                }
+            });
             
-            $productEntity->addProperty($propertyEntity);
+            $element = $feedProductProperty->filter(function ($element) use ($key) {
+                if ($element->getName() == $key) {
+                    return $element;
+                }
+            });
+            
+            if ($element->first()->getActive() === false) {
+                continue;
+            }
+            
+            if (in_array($key, [
+                'brand',
+                'brand_logo'
+            ])) {
+                if ($exists) {
+                    $setter = 'set' . ucfirst($element->first()->getDbTableProperty());
+                    
+                    if ($productEntity->getBrand()->count() < 1) {
+                        $brand = new Brand();
+                        $brand->$setter($value);
+                        
+                        $productEntity->addBrand($brand);
+                    } else {
+                        $brand = $productEntity->getBrand()->first();
+                        $brand->$setter($value);
+                    }
+                    
+                    $matchedProperty = true;
+                }
+            } elseif ($key == 'link') {
+                if ($exists) {
+                    $setter = 'set' . ucfirst($element->first()->getDbTableProperty());
+                    
+                    $productEntity->$setter($value);
+                    
+                    $matchedProperty = true;
+                }
+            } elseif ($key == 'description') {
+                if ($exists) {
+                    $setter = 'set' . ucfirst($element->first()->getDbTableProperty());
+                    
+                    $productEntity->$setter($value);
+                    
+                    $matchedProperty = true;
+                }
+            } elseif ($key == 'title') {
+                if ($exists) {
+                    $setter = 'set' . ucfirst($element->first()->getDbTableProperty());
+                    
+                    $productEntity->$setter($value);
+                    
+                    $matchedProperty = true;
+                }
+            } elseif ($key == 'price') {
+                if ($exists) {
+                    $setter = 'set' . ucfirst($element->first()->getDbTableProperty());
+                    
+                    $productEntity->$setter($value);
+                    
+                    $matchedProperty = true;
+                }
+            }
+            
+            if ($matchedProperty == false) {
+                $propertyEntity = new \Application\Entity\Property();
+                $propertyEntity->setProduct($productEntity)
+                    ->setName($key)
+                    ->setValue($value);
+                
+                $productEntity->addProperty($propertyEntity);
+            }
         }
-
-        $this->productService->create($productEntity);
+        
+        return $this->productService->create($productEntity);
     }
 
     private function update($productEntity, $productProperties, $productImages, $productCategories)
     {
-        $properties = [];
-        
-        $propertiesCollection = $productEntity->getProperty();
-        
-        if (! $propertiesCollection->isEmpty()) {
-            foreach ($propertiesCollection as $property) {
-                $properties[$property->getName()] = $property->getValue();
-            }
-        }
-        
-        // $differences = array_merge(array_diff($productProperties, $properties), array_diff($properties, $productProperties));
-        
-        // if (! empty($differences)) {
         $this->productService->updateProperties($productEntity, $productProperties);
         $this->productService->updateImages($productEntity, $productImages);
-        
-        // }
-        // $this->addFeedCategory($productEntity->getProgramId(), $productCategories);
-        
-        // foreach ($productProperties as $key => $property) {
-        // if (array_key_exists($key, $properties)) {
-        // if ($key === 'images') {
-        // foreach ($property as $image) {
-        // $images = $this->getCurrentProductImages($productEntity);
-        
-        // if (! in_array($image->location, $images)) {
-        // $productImageEntity = new ProductImage();
-        // $productImageEntity->setProduct($productEntity)->setName($image->location);
-        
-        // $productEntity->addProductImage($productImageEntity);
-        // }
-        // }
-        // } else {
-        // $propertyEntity = $properties[$key];
-        
-        // if ($propertyEntity->getValue() !== $property) {
-        // $changelogProduct = new ChangelogProduct();
-        // $changelogProduct->setName($key)
-        // ->setValue($property)
-        // ->setProduct($productEntity)
-        // ->setCreationDate(new \Datetime());
-        
-        // $this->entityManager->persist($changelogProduct);
-        
-        // $propertyEntity->setValue($property);
-        // }
-        // }
-        // } else {
-        // $productEntity = $this->entityManager->merge($productEntity);
-        
-        // $propertyEntity = new \Application\Entity\Property();
-        // $propertyEntity->setProduct($productEntity)
-        // ->setName($key)
-        // ->setValue($property);
-        
-        // $productEntity->addProperty($propertyEntity);
-        // }
-        // }
-        
-        // $this->entityManager->flush();
-        // $this->entityManager->clear();
-        
-        // die();
+        $this->productService->updateCategories($productEntity, $productCategories);
     }
 
-    private function compareFeedCategories($currentCategories, $categories)
+    public function deleteAction()
     {
-        // $differences = array_merge(array_diff($categories, $currentCategories), array_diff($currentCategories, $categories));
-        // if (empty($differences)) {
-        // // no differences
-        // } else {
-        // // there are differences!;
-        // }
-    }
-
-    private function insertFeedCategory($feed, $categories)
-    {
-        try {
-            $feedCategory = new FeedCategory();
-            $feedCategory->setFeed($feed);
+        $stdin = fopen('php://stdin', 'r');
+        $yes = false;
+        
+        while (! $yes) {
+            echo "\033[31mReset the database? (Y/N)\033[0m: ";
             
-            $this->entityManager->persist($feedCategory);
+            $input = strtolower(trim(fgets($stdin)));
             
-            foreach ($categories as $category) {
-                $feedCategoryValue = new FeedCategoryValue();
-                $feedCategoryValue->setName($category)->setFeedCategory($feedCategory);
+            if ($input == 'y') {
+                $this->productService->reset();
                 
-                $this->entityManager->persist($feedCategoryValue);
+                exit();
             }
-            
-            $this->entityManager->flush();
-        } catch (\Exception $e) {
-            var_dump($e->getMessage());
-            die();
         }
         
-        // try {
-        // $this->entityManager->flush();
-        // } catch (\Doctrine\DBAL\Exception\UniqueConstraintViolationException $e) {
-        // // Do nothing..
-        // }
-        // $this->entityManager->clear();
+        return false;
     }
 
-    private function deleteFeedCategory()
-    {}
+    public function elasticsearchAction()
+    {
+        $client = \Elasticsearch\ClientBuilder::create()->setHosts([
+            '149.210.204.168:9200'
+        ])->build();
+        
+        $client->indices()->delete([
+            'index' => 'productsearch'
+        ]);
+    }
 }

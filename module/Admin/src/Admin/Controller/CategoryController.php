@@ -11,11 +11,16 @@ class CategoryController extends AbstractActionController
 
     private $entityManager;
 
+    private $categoryService;
+
+    private $productService;
+
     private $formElementManager;
 
-    public function __construct($categoryService, $formElementManager, $feedCategoryValueService)
+    public function __construct($categoryService, $productService, $formElementManager, $feedCategoryValueService)
     {
         $this->categoryService = $categoryService;
+        $this->productService = $productService;
         $this->feedCategoryValueService = $feedCategoryValueService;
         
         $this->formElementManager = $formElementManager;
@@ -77,7 +82,7 @@ class CategoryController extends AbstractActionController
         $request = $this->getRequest();
         if ($request->isPost()) {
             $nodeData = $this->params()->fromPost('node', null);
-
+            
             $this->categoryService->rename($nodeData);
         }
         
@@ -97,20 +102,6 @@ class CategoryController extends AbstractActionController
         }
         
         return new JsonModel();
-    }
-
-    public function productsAction()
-    {
-        $products = $this->entityManager->getRepository('Application\Entity\Product')->findBy([
-            'category' => 1
-        ]);
-        
-        $viewModel = new ViewModel();
-        $viewModel->setVariables([
-            'products' => $products
-        ]);
-        
-        return $viewModel;
     }
 
     public function linkAction()
@@ -133,10 +124,15 @@ class CategoryController extends AbstractActionController
     {
         $categories = [];
         
-        $feedCategoryValue = $this->feedCategoryValueService->findOneBy(['id' => $this->getEvent()->getRouteMatch()->getParam('id')]);
-
-        $this->feedCategoryValueService->addToCategories($feedCategoryValue, $this->getRequest()->getPost('selectedNodes'));
-
+        $feedCategoryValue = $this->feedCategoryValueService->findOneBy([
+            'id' => $this->getEvent()
+                ->getRouteMatch()
+                ->getParam('id')
+        ]);
+        
+        $this->feedCategoryValueService->addToCategories($feedCategoryValue, $this->getRequest()
+            ->getPost('selectedNodes'));
+        
         return new JsonModel();
     }
 
@@ -148,8 +144,10 @@ class CategoryController extends AbstractActionController
         
         $form = $this->formElementManager->get('Admin\Form\Category\CategoryForm');
         
-        $category = $this->categoryService->findOneBy(['id' => $categoryId]);
-
+        $category = $this->categoryService->findOneBy([
+            'id' => $categoryId
+        ]);
+        
         $request = $this->getRequest();
         if ($request->isPost()) {
             $form->bind($category);
@@ -180,43 +178,69 @@ class CategoryController extends AbstractActionController
 
     public function testAction()
     {
-        $post = $this->getRequest()->getPost('depdrop_parents');
+        $feedCategoryValueId = $this->getEvent()
+            ->getRouteMatch()
+            ->getParam('id');
         
-        $value = end($post);
-        
-        $categoryCollection = $this->entityManager->getRepository('Application\Entity\Category')->findBy([
-            'parent' => $value
+        $viewModel = new ViewModel();
+        $viewModel->setVariables([
+            'id' => $feedCategoryValueId
         ]);
         
-        $categories = [
-            'output'
-        ];
-        foreach ($categoryCollection as $category) {
-            $categories['output'][] = [
-                'id' => $category->getId(),
-                'name' => $category->getName()
-            ];
+        return $viewModel;
+    }
+
+    public function testAjaxAction()
+    {
+        $feedCategoryValueId = $this->getEvent()
+            ->getRouteMatch()
+            ->getParam('id');
+        
+        $start = $this->params()->fromPost('start');
+        $length = $this->params()->fromPost('length');
+        
+        $paginator = $this->productService->findByFeedCategoryValue([
+            'id' => $feedCategoryValueId
+        ], $start, $length);
+        
+        $rows = [];
+        
+        if (0 < count($paginator)) {
+            foreach ($paginator as $productEntity) {
+                $rows[] = [
+                    $productEntity->getUniqueId(),
+                    $productEntity->getProgramId(),
+                    (! empty($productEntity->getCategory()) ? $productEntity->getCategory()->getName() : null),
+                    $productEntity->getName(),
+                    '<a href="' . $productEntity->getUrl() . '"><i class="fa fa-external-link" aria-hidden="true"></i></a>',
+                    '<a href="/admin/product/edit/' . $productEntity->getId() . '"><i class="fa fa-eye" aria-hidden="true"></i></a>'
+                ];
+            }
         }
         
-        return new JsonModel($categories);
+        return new JsonModel([
+            'recordsTotal' => $paginator->count(),
+            'recordsFiltered' => $paginator->count(),
+            'data' => $rows
+        ]);
     }
 
     public function matchingAction()
     {
-        $start = $this->params()->fromPost('start');
-        $length = $this->params()->fromPost('length');
-
-        $paginator = $this->categoryService->getUnassignedFeedCategoryValues($start, $length);
-
+        $filter = $this->params()->fromPost();
+        
+        $paginator = $this->categoryService->getUnassignedFeedCategoryValues($filter);
+        
         $rows = [];
         
         if (0 < count($paginator)) {
             foreach ($paginator as $feedCategoryValue) {
-                // if($feedCategoryValue->getCategory()->isEmpty()) {
                 $rows[] = [
+                    $feedCategoryValue->getFeedCategory()
+                        ->getFeed()
+                        ->getProgramId(),
                     '<a href="/admin/category/link/' . $feedCategoryValue->getId() . '">' . $feedCategoryValue->getName() . '</a>'
                 ];
-                // }
             }
         }
         

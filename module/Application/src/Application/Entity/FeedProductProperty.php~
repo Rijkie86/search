@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * FeedProductProperty
  *
- * @ORM\Table(name="feed_product_property")
+ * @ORM\Table(name="feed_product_property", uniqueConstraints={@ORM\UniqueConstraint(name="feed_id", columns={"feed_id", "name"})}, indexes={@ORM\Index(name="IDX_499772F651A5BC03", columns={"feed_id"}), @ORM\Index(name="list_object_id", columns={"list_object_id"})})
  * @ORM\Entity
  */
 class FeedProductProperty
@@ -28,21 +28,42 @@ class FeedProductProperty
 
     /**
      *
-     * @var string @ORM\Column(name="db_table", type="string", length=255, nullable=true)
+     * @var string @ORM\Column(name="db_table_property", type="string", length=255, nullable=true)
      */
-    private $dbTable;
+    private $dbTableProperty;
 
     /**
      *
-     * @var string @ORM\Column(name="tb_table_property", type="string", length=255, nullable=true)
+     * @var \DateTime @ORM\Column(name="modified_date", type="datetime", nullable=true)
      */
-    private $tbTableProperty;
+    private $modifiedDate;
 
     /**
      *
-     * @var \Feed @ORM\ManyToOne(targetEntity="Feed")
+     * @var boolean @ORM\Column(name="active", type="boolean", nullable=false)
+     */
+    private $active = '1';
+    
+    /**
+     *
+     * @var boolean @ORM\Column(name="locked", type="boolean", nullable=false)
+     */
+    private $locked = '0';
+
+    /**
+     *
+     * @var \ListObject @ORM\ManyToOne(targetEntity="ListObject")
      *      @ORM\JoinColumns({
-     *      @ORM\JoinColumn(name="feed_id", referencedColumnName="id")
+     *      @ORM\JoinColumn(name="list_object_id", referencedColumnName="id", onDelete="CASCADE")
+     *      })
+     */
+    private $listObject;
+
+    /**
+     *
+     * @var \Feed @ORM\ManyToOne(targetEntity="Feed", inversedBy="feedProductProperty")
+     *      @ORM\JoinColumns({
+     *      @ORM\JoinColumn(name="feed_id", referencedColumnName="id", onDelete="CASCADE")
      *      })
      */
     private $feed;
@@ -106,50 +127,98 @@ class FeedProductProperty
     }
 
     /**
-     * Set dbTable
+     * Set active
      *
-     * @param string $dbTable            
+     * @param boolean $active            
      *
      * @return FeedProductProperty
      */
-    public function setDbTable($dbTable)
+    public function setActive($active)
     {
-        $this->dbTable = $dbTable;
+        $this->active = $active;
         
         return $this;
     }
 
     /**
-     * Get dbTable
+     * Get active
      *
-     * @return string
+     * @return boolean
      */
-    public function getDbTable()
+    public function getActive()
     {
-        return $this->dbTable;
+        return $this->active;
     }
 
     /**
-     * Set tbTableProperty
+     * Set dbTableProperty
      *
-     * @param string $tbTableProperty            
+     * @param string $dbTableProperty            
      *
      * @return FeedProductProperty
      */
-    public function setTbTableProperty($tbTableProperty)
+    public function setDbTableProperty($dbTableProperty)
     {
-        $this->tbTableProperty = $tbTableProperty;
+        $this->dbTableProperty = $dbTableProperty;
         
         return $this;
     }
 
     /**
-     * Get tbTableProperty
+     * Get dbTableProperty
      *
      * @return string
      */
-    public function getTbTableProperty()
+    public function getDbTableProperty()
     {
-        return $this->tbTableProperty;
+        return $this->dbTableProperty;
+    }
+
+    /**
+     * Set modifiedDate
+     *
+     * @param \DateTime $modifiedDate            
+     *
+     * @return FeedProductProperty
+     */
+    public function setModifiedDate($modifiedDate)
+    {
+        $this->modifiedDate = $modifiedDate;
+        
+        return $this;
+    }
+
+    /**
+     * Get modifiedDate
+     *
+     * @return \DateTime
+     */
+    public function getModifiedDate()
+    {
+        return $this->modifiedDate;
+    }
+
+    /**
+     * Set listObject
+     *
+     * @param \Application\Entity\ListObject $listObject
+     *
+     * @return FeedProductProperty
+     */
+    public function setListObject(\Application\Entity\ListObject $listObject = null)
+    {
+        $this->listObject = $listObject;
+
+        return $this;
+    }
+
+    /**
+     * Get listObject
+     *
+     * @return \Application\Entity\ListObject
+     */
+    public function getListObject()
+    {
+        return $this->listObject;
     }
 }

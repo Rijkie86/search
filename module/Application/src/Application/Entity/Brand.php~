@@ -39,6 +39,17 @@ class Brand
     private $url;
 
     /**
+     *
+     * @var \Doctrine\Common\Collections\Collection @ORM\ManyToMany(targetEntity="Product", mappedBy="brand")
+     */
+    private $product;
+
+    public function __construct()
+    {
+        $this->product = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
      * Get id
      *
      * @return integer
@@ -118,5 +129,39 @@ class Brand
     public function getUrl()
     {
         return $this->url;
+    }
+
+    /**
+     * Add product
+     *
+     * @param \Application\Entity\Product $product
+     *
+     * @return Brand
+     */
+    public function addProduct(\Application\Entity\Product $product)
+    {
+        $this->product[] = $product;
+
+        return $this;
+    }
+
+    /**
+     * Remove product
+     *
+     * @param \Application\Entity\Product $product
+     */
+    public function removeProduct(\Application\Entity\Product $product)
+    {
+        $this->product->removeElement($product);
+    }
+
+    /**
+     * Get product
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getProduct()
+    {
+        return $this->product;
     }
 }

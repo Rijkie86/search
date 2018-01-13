@@ -58,10 +58,10 @@ class Category
      * @var \Doctrine\Common\Collections\Collection @ORM\ManyToMany(targetEntity="FeedCategoryValue", inversedBy="category")
      *      @ORM\JoinTable(name="rel_category_feed_category_value",
      *      joinColumns={
-     *      @ORM\JoinColumn(name="category_id", referencedColumnName="id")
+     *      @ORM\JoinColumn(name="category_id", referencedColumnName="id", onDelete="CASCADE")
      *      },
      *      inverseJoinColumns={
-     *      @ORM\JoinColumn(name="feed_category_value_id", referencedColumnName="id")
+     *      @ORM\JoinColumn(name="feed_category_value_id", referencedColumnName="id", onDelete="CASCADE")
      *      }
      *      )
      */

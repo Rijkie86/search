@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * FeedCategoryValue
  *
- * @ORM\Table(name="feed_category_value", uniqueConstraints={@ORM\UniqueConstraint(name="name", columns={"name"})}, indexes={@ORM\Index(name="feed_category_id", columns={"feed_category_id"})})
+ * @ORM\Table(name="feed_category_value", uniqueConstraints={@ORM\UniqueConstraint(name="feed_category_id_2", columns={"feed_category_id", "name"})}, indexes={@ORM\Index(name="feed_category_id", columns={"feed_category_id"})})
  * @ORM\Entity
  */
 class FeedCategoryValue
@@ -30,7 +30,7 @@ class FeedCategoryValue
      *
      * @var \Application\Entity\FeedCategory @ORM\ManyToOne(targetEntity="Application\Entity\FeedCategory", inversedBy="feedCategoryValue")
      *      @ORM\JoinColumns({
-     *      @ORM\JoinColumn(name="feed_category_id", referencedColumnName="id")
+     *      @ORM\JoinColumn(name="feed_category_id", referencedColumnName="id", onDelete="CASCADE")
      *      })
      */
     private $feedCategory;
@@ -42,12 +42,10 @@ class FeedCategoryValue
     private $category;
 
     /**
-     * Constructor
+     *
+     * @var \Doctrine\Common\Collections\Collection @ORM\ManyToMany(targetEntity="Product", mappedBy="feedCategoryValue")
      */
-    public function __construct()
-    {
-        $this->category = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+    private $product;
 
     /**
      * Get id
@@ -131,10 +129,10 @@ class FeedCategoryValue
      */
     public function removeCategory(\Application\Entity\Category $category)
     {
-        if(!$this->category->contains($category)) {
+        if (! $this->category->contains($category)) {
             return;
         }
-
+        
         $this->category->removeElement($category);
         $category->removeFeedCategoryValue($this);
     }
@@ -147,5 +145,47 @@ class FeedCategoryValue
     public function getCategory()
     {
         return $this->category;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->category = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->product = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add product
+     *
+     * @param \Application\Entity\Product $product
+     *
+     * @return FeedCategoryValue
+     */
+    public function addProduct(\Application\Entity\Product $product)
+    {
+        $this->product[] = $product;
+
+        return $this;
+    }
+
+    /**
+     * Remove product
+     *
+     * @param \Application\Entity\Product $product
+     */
+    public function removeProduct(\Application\Entity\Product $product)
+    {
+        $this->product->removeElement($product);
+    }
+
+    /**
+     * Get product
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getProduct()
+    {
+        return $this->product;
     }
 }

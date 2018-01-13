@@ -1,6 +1,6 @@
 <div class="content-wrapper">
 	<section class="content-header">
-		<h1>Productfeeds</h1>
+		<h1><?php echo $this->translate('Productfeeds'); ?></h1>
 		<ol class="breadcrumb">
 			<li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
 		</ol>
@@ -11,6 +11,7 @@
 				<table class="table table-striped table-hover table-condensed no-margin">
 					<thead>
 						<tr>
+							<th></th>
 							<th>ID</th>
 							<th>Program ID</th>
 							<th>Product count</th>
@@ -22,6 +23,18 @@
                             foreach ($this->feeds as $feed) {
                                 echo '
                                     <tr>
+                                        <td>
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    Choose action <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li><a href="javascript:" onclick="location.href = \'/admin/feed/properties/' . $feed->getId() . '\'">View properties</a></li>
+                                                    <li role="separator" class="divider"></li>
+                                                    <li><a style="color: red;" href="#">Disable</a></li>
+                                                </ul>
+                                            </div>
+                                        </td>
                                         <td>' . $feed->getId() . '</td>
                                         <td>' . $feed->getProgramId() . '</td>
                                         <td>' . $feed->getProductCount() . '</td>
@@ -33,6 +46,7 @@
                     </tbody>
 					<tfoot>
 						<tr>
+							<th></th>
 							<th>ID</th>
 							<th>Program ID</th>
 							<th>Product count</th>

@@ -64,10 +64,10 @@ class ListObject extends \Application\Entity\ListObject implements \Doctrine\ORM
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return ['__isInitialized__', '' . "\0" . 'Application\\Entity\\ListObject' . "\0" . 'id', '' . "\0" . 'Application\\Entity\\ListObject' . "\0" . 'name', '' . "\0" . 'Application\\Entity\\ListObject' . "\0" . 'bolt'];
+            return ['__isInitialized__', '' . "\0" . 'Application\\Entity\\ListObject' . "\0" . 'id', '' . "\0" . 'Application\\Entity\\ListObject' . "\0" . 'name'];
         }
 
-        return ['__isInitialized__', '' . "\0" . 'Application\\Entity\\ListObject' . "\0" . 'id', '' . "\0" . 'Application\\Entity\\ListObject' . "\0" . 'name', '' . "\0" . 'Application\\Entity\\ListObject' . "\0" . 'bolt'];
+        return ['__isInitialized__', '' . "\0" . 'Application\\Entity\\ListObject' . "\0" . 'id', '' . "\0" . 'Application\\Entity\\ListObject' . "\0" . 'name'];
     }
 
     /**
@@ -208,39 +208,6 @@ class ListObject extends \Application\Entity\ListObject implements \Doctrine\ORM
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getName', []);
 
         return parent::getName();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function addBolt(\Application\Entity\Bolt $bolt)
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'addBolt', [$bolt]);
-
-        return parent::addBolt($bolt);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function removeBolt(\Application\Entity\Bolt $bolt)
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeBolt', [$bolt]);
-
-        return parent::removeBolt($bolt);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getBolt()
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getBolt', []);
-
-        return parent::getBolt();
     }
 
 }

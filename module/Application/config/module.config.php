@@ -3,7 +3,6 @@ namespace Application;
 
 use Zend\Router\Http\Literal;
 use Zend\Router\Http\Segment;
-use Zend\ServiceManager\Factory\InvokableFactory;
 return array(
     'doctrine' => [
         'authentication' => [
@@ -41,27 +40,35 @@ return array(
             [
                 'label' => 'Feed',
                 'route' => 'admin',
+                'controller' => 'feed',
                 'pages' => [
                     [
-                        'label' => 'Overzicht',
+                        'label' => 'Overview',
                         'route' => 'admin',
                         'controller' => 'feed',
                         'action' => 'index'
+                    ],
+                    [
+                        'label' => 'New',
+                        'route' => 'admin',
+                        'controller' => 'feed',
+                        'action' => 'create'
                     ]
                 ]
             ],
             [
-                'label' => 'Categorie',
+                'label' => 'Category',
                 'route' => 'admin',
+                'controller' => 'category',
                 'pages' => [
                     [
-                        'label' => 'Overzicht',
+                        'label' => 'Overview',
                         'route' => 'admin',
                         'controller' => 'category',
                         'action' => 'index'
                     ],
                     [
-                        'label' => 'Nieuw',
+                        'label' => 'New',
                         'route' => 'admin',
                         'controller' => 'category',
                         'action' => 'create'
@@ -75,7 +82,7 @@ return array(
                 ]
             ],
             [
-                'label' => 'Objects',
+                'label' => 'Object',
                 'route' => 'admin',
                 'pages' => [
                     [
@@ -83,7 +90,7 @@ return array(
                         'route' => 'admin',
                         'pages' => [
                             [
-                                'label' => 'Overzicht',
+                                'label' => 'Overview',
                                 'route' => 'admin',
                                 'controller' => 'bolt',
                                 'action' => 'index'
@@ -93,17 +100,37 @@ return array(
                 ]
             ],
             [
-                'label' => 'Producten',
+                'label' => 'Promotion code',
                 'route' => 'admin',
+                'controller' => 'promotioncode',
                 'pages' => [
                     [
-                        'label' => 'Overzicht',
+                        'label' => 'Overview',
+                        'route' => 'admin',
+                        'controller' => 'promotioncode',
+                        'action' => 'index'
+                    ],
+                    [
+                        'label' => 'Create',
+                        'route' => 'admin',
+                        'controller' => 'promotioncode',
+                        'action' => 'create'
+                    ]
+                ]
+            ],
+            [
+                'label' => 'Product',
+                'route' => 'admin',
+                'controller' => 'product',
+                'pages' => [
+                    [
+                        'label' => 'Overview',
                         'route' => 'admin',
                         'controller' => 'product',
                         'action' => 'index'
                     ],
                     [
-                        'label' => 'Nieuw',
+                        'label' => 'New',
                         'route' => 'admin',
                         'controller' => 'product',
                         'action' => 'create'
@@ -111,7 +138,45 @@ return array(
                 ]
             ],
             [
-                'label' => 'Websites',
+                'label' => 'Account',
+                'route' => 'admin',
+                'controller' => 'account',
+                'pages' => [
+                    [
+                        'label' => 'Overview',
+                        'route' => 'admin',
+                        'controller' => 'account',
+                        'action' => 'index'
+                    ],
+                    [
+                        'label' => 'New',
+                        'route' => 'admin',
+                        'controller' => 'account',
+                        'action' => 'create'
+                    ]
+                ]
+            ],
+            [
+                'label' => 'To Do List',
+                'route' => 'admin',
+                'controller' => 'todo',
+                'pages' => [
+                    [
+                        'label' => 'Overview',
+                        'route' => 'admin',
+                        'controller' => 'todo',
+                        'action' => 'index'
+                    ],
+                    [
+                        'label' => 'New',
+                        'route' => 'admin',
+                        'controller' => 'todo',
+                        'action' => 'create'
+                    ]
+                ]
+            ],
+            [
+                'label' => 'Website',
                 'route' => 'home'
             ]
         ]
@@ -131,13 +196,13 @@ return array(
             'application' => [
                 'type' => Segment::class,
                 'options' => [
-                    'route' => '/application/[:action/][:id/]',
+                    'route' => '/application[/:action][/:id]',
                     'constraints' => [
                         'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                         'id' => '[0-9]+'
                     ],
                     'defaults' => [
-                        'controller' => Controller\IndexController::class,
+                        'controller' => 'index',
                         'action' => 'index'
                     ]
                 ]
@@ -153,6 +218,24 @@ return array(
                         'defaults' => array(
                             'controller' => 'console',
                             'action' => 'index'
+                        )
+                    )
+                ),
+                'promotioncode' => array(
+                    'options' => array(
+                        'route' => 'promotioncode',
+                        'defaults' => array(
+                            'controller' => 'console',
+                            'action' => 'promotioncode'
+                        )
+                    )
+                ),
+                'elasticsearch' => array(
+                    'options' => array(
+                        'route' => 'elasticsearch',
+                        'defaults' => array(
+                            'controller' => 'console',
+                            'action' => 'elasticsearch'
                         )
                     )
                 ),
@@ -182,6 +265,15 @@ return array(
                             'action' => 'insert-products'
                         )
                     )
+                ),
+                'delete' => array(
+                    'options' => array(
+                        'route' => 'delete [<programId>]',
+                        'defaults' => array(
+                            'controller' => 'console',
+                            'action' => 'delete'
+                        )
+                    )
                 )
             ]
         ]
@@ -195,14 +287,23 @@ return array(
     'service_manager' => [
         'factories' => [
             'navigation' => \Zend\Navigation\Service\DefaultNavigationFactory::class,
-
+            
+            'authorize' => Permissions\AuthorizeFactory::class,
+            'accountService' => Service\Factory\AccountServiceFactory::class,
             'boltService' => Service\Factory\BoltServiceFactory::class,
+            'brandService' => Service\Factory\BrandServiceFactory::class,
             'categoryService' => Service\Factory\CategoryServiceFactory::class,
             'feedService' => Service\Factory\FeedServiceFactory::class,
             'feedCategoryValueService' => Service\Factory\FeedCategoryValueServiceFactory::class,
             'productService' => Service\Factory\ProductServiceFactory::class,
             'propertyService' => Service\Factory\PropertyServiceFactory::class,
+            'todoService' => Service\Factory\TodoServiceFactory::class,
             'websiteService' => Service\Factory\WebsiteServiceFactory::class
+        ]
+    ],
+    'view_helpers' => [
+        'factories' => [
+            'isAllowed' => View\Helper\Factory\IsAllowedFactory::class
         ]
     ],
     'view_manager' => [
@@ -210,10 +311,10 @@ return array(
         'display_exceptions' => true,
         'doctype' => 'HTML5',
         'not_found_template' => 'error/404',
-        'exception_template' => 'error/index',
+        'exception_template' => 'error/new',
         'template_map' => [
             'layout/layout' => __DIR__ . '/../view/layout/layout.phtml',
-//             'layout/layout' => __DIR__ . '/../view/layout/shop.phtml',
+            // 'layout/layout' => __DIR__ . '/../view/layout/shop.phtml',
             'application/index/index' => __DIR__ . '/../view/application/index/index.phtml',
             'error/404' => __DIR__ . '/../view/error/404.phtml',
             'error/index' => __DIR__ . '/../view/error/index.phtml'
