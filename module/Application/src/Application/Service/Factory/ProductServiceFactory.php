@@ -12,7 +12,9 @@ class ProductServiceFactory implements FactoryInterface
         $entityManager = $container->get('Doctrine\ORM\EntityManager');
         
         $authorize = $container->get('authorize');
+        
+        $elasticsearchService = $container->get('elasticsearchService');
 
-        return new ProductService($entityManager, $container->get('propertyService'), $authorize);
+        return new ProductService($entityManager, $container->get('propertyService'), $authorize, $elasticsearchService);
     }
 }

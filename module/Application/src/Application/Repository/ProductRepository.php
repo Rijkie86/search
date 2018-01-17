@@ -34,6 +34,13 @@ class ProductRepository extends EntityRepository
             ->setFirstResult($start)
             ->setMaxResults($length);
         
+            foreach($params as $key => $values) {
+                if($values['value'] != '') {
+                    $queryBuilder->where('product.' . $values['name'] . ' = ?' . $key);
+                    $queryBuilder->setParameter($key, $values['value']);
+                }
+            }
+        
         $query = $queryBuilder->getQuery();
         
         $paginator = new paginator($query);

@@ -1,0 +1,17 @@
+<?php
+$this->form->prepare();
+echo $this->form()->openTag($this->form);
+?>
+<div class="box-body">
+    <?php
+    foreach ($this->form->get('property') as $o) {
+        echo '
+            <div class="form-group">
+                <label>' . $o->getObject()->getName() . '</label> ' . $this->formrow($o->get('value')) . '
+            </div>
+        ';
+    }
+    ?>
+</div>
+<?php
+echo $this->form()->closeTag();

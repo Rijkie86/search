@@ -9,6 +9,7 @@ return [
     // 'Zend\Validator',
     'DoctrineModule',
     'DoctrineORMModule',
+    'ZendDeveloperTools', 
     'Admin',
     'Application',
     'Login',

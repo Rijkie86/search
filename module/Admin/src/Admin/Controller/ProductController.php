@@ -23,9 +23,12 @@ class ProductController extends AbstractActionController
     {
         $start = 1;
         $length = 20;
+        
+        $filter = $this->formElementManager->get('productFilter');
 
         return new ViewModel([
-            'paginator' => $paginator = $this->productService->findBy([], $start, $length)
+            'filter' => $filter,
+            'paginator' => $paginator = $this->productService->findBy([], $start, $length),
         ]);
     }
 
@@ -33,8 +36,9 @@ class ProductController extends AbstractActionController
     {
         $start = $this->params()->fromPost('start');
         $length = $this->params()->fromPost('length');
-        
-        $paginator = $this->productService->findBy([], $start, $length);
+        $filter = $this->params()->fromPost('filter');
+
+        $paginator = $this->productService->findBy($filter, $start, $length);
         
         $rows = [];
         
@@ -95,7 +99,7 @@ class ProductController extends AbstractActionController
         $product = $this->productService->findOneBy([
             'id' => $productId
         ]);
-        
+
         if ($productId === null) {
             return $this->redirect()->toRoute('application');
         }
@@ -103,6 +107,28 @@ class ProductController extends AbstractActionController
         $viewModel = new ViewModel();
         $viewModel->setVariables([
             'productId' => $productId
+        ]);
+        
+        return $viewModel;
+    }
+    
+    public function propertiesAction()
+    {
+        $productEntity = $this->productService->findOneBy([
+            'id' => $this->getEvent()
+            ->getRouteMatch()
+            ->getParam('id', null)
+        ]);
+        
+        $form = $this->formElementManager->get('productForm');
+        $form->bind($productEntity);
+
+        $viewModel = new ViewModel();
+        $viewModel->setTerminal(true)
+        ->setTemplate('admin/product/partial/properties.phtml')
+        ->setVariables([
+            'form' => $form,
+            'productEntity' => $productEntity
         ]);
         
         return $viewModel;

@@ -46,6 +46,19 @@ class ProductForm extends Form
         
         $this->add(array(
             'type' => 'Zend\Form\Element\Collection',
+            'name' => 'property',
+            'options' => array(
+                'label' => 'Properties',
+                'should_create_template' => false,
+                'allow_add' => false,
+                'target_element' => array(
+                    'type' => 'propertyFieldset'
+                )
+            )
+        ));
+        
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Collection',
             'name' => 'accommodation',
             'options' => array(
                 'label' => 'Accommodation',

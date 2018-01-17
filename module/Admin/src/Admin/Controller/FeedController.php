@@ -217,7 +217,7 @@ class FeedController extends AbstractActionController implements ResourceInterfa
             $form->setData($request->getPost());
             if ($form->isValid()) {
                 
-                $feedProductProperty->setModifiedDate(new \DateTime());
+                $feedProductProperty->setModifiedDate(new \DateTime())->setLocked(true);
                 
                 $this->feedService->updateFeedProductProperty($feedProductProperty);
                 

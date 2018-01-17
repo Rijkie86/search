@@ -42,24 +42,23 @@ use Zend\Form\Element;
                                 $attributes = 'data-href="/admin/feed/link-properties/' . $this->feed->getId() . '-' . $property->getId() . '" data-toggle="modal" data-target="#myModal"';
                             }
                             
+                            $active = new Element\Checkbox();
+                            $active->setName('active')->setValue($property->getActive());
+                            
                             $locked = new Element\Checkbox();
                             $locked->setName('locked')->setValue($property->getLocked());
                             
-//                             if ($property->getLocked() == 0) {
-                                echo '
-                                    <tr>
-                                        <td>' . $property->getId() . '</td>
-                                        <td>' . $property->getName() . '</td>
-                                        <td>
-                                            <a class="' . $buttonClass . '" ' . $attributes . '>
-                                                ' . $buttonText . '
-                                            </a>
-                                        </td>
-                                        <td>' . $property->getActive() . '</td>
-                                        <td>' . $this->formCheckbox($locked) . '</td>
-                                    </tr>
-                                ';
-//                             }
+                            echo '
+                                <tr>
+                                    <td>' . $property->getId() . '</td>
+                                    <td>' . $property->getName() . '</td>
+                                    <td>
+                                        ' . ($property->getLocked() == 0 ? '<a class="' . $buttonClass . '" ' . $attributes . '>' . $buttonText . '</a>' : null) . '
+                                    </td>
+                                    <td>' . $this->formCheckbox($active) . '</td>
+                                    <td>' . $this->formCheckbox($locked) . '</td>
+                                </tr>
+                            ';
                         }
                         ?>
                     </tbody>

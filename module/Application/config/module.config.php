@@ -293,6 +293,7 @@ return array(
             'boltService' => Service\Factory\BoltServiceFactory::class,
             'brandService' => Service\Factory\BrandServiceFactory::class,
             'categoryService' => Service\Factory\CategoryServiceFactory::class,
+            'elasticsearchService' => Service\Factory\ElasticsearchServiceFactory::class,
             'feedService' => Service\Factory\FeedServiceFactory::class,
             'feedCategoryValueService' => Service\Factory\FeedCategoryValueServiceFactory::class,
             'productService' => Service\Factory\ProductServiceFactory::class,

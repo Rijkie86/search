@@ -47,6 +47,7 @@ return [
             'linkForm' => Form\Feed\Factory\LinkFormFactory::class,
             'boltForm' => Form\Bolt\Factory\BoltFormFactory::class,
             'boltSizeFieldset' => Form\Bolt\Factory\BoltSizeFieldsetFactory::class,
+            'productFilter' => Filter\Product\Factory\ProductFilterFactory::class,
             'productForm' => Form\Product\Factory\ProductFormFactory::class,
             'propertyFieldset' => Form\Product\Factory\PropertyFieldsetFactory::class,
             'workItemForm' => Form\WorkItem\Factory\WorkItemFormFactory::class

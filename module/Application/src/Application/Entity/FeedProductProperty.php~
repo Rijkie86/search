@@ -43,7 +43,7 @@ class FeedProductProperty
      * @var boolean @ORM\Column(name="active", type="boolean", nullable=false)
      */
     private $active = '1';
-    
+
     /**
      *
      * @var boolean @ORM\Column(name="locked", type="boolean", nullable=false)
@@ -201,14 +201,14 @@ class FeedProductProperty
     /**
      * Set listObject
      *
-     * @param \Application\Entity\ListObject $listObject
+     * @param \Application\Entity\ListObject $listObject            
      *
      * @return FeedProductProperty
      */
     public function setListObject(\Application\Entity\ListObject $listObject = null)
     {
         $this->listObject = $listObject;
-
+        
         return $this;
     }
 
@@ -220,5 +220,29 @@ class FeedProductProperty
     public function getListObject()
     {
         return $this->listObject;
+    }
+
+    /**
+     * Set locked
+     *
+     * @param boolean $locked            
+     *
+     * @return FeedProductProperty
+     */
+    public function setLocked($locked)
+    {
+        $this->locked = $locked;
+        
+        return $this;
+    }
+
+    /**
+     * Get locked
+     *
+     * @return boolean
+     */
+    public function getLocked()
+    {
+        return $this->locked;
     }
 }

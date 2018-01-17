@@ -3,8 +3,6 @@ namespace Application\Service;
 
 use Application\Entity\Product;
 use Application\Entity\Property;
-use Application\Entity\ShellLogProduct;
-use Doctrine\Common\Collections\Criteria;
 use Application\Entity\Brand;
 use Application\Entity\Accommodation;
 
@@ -83,17 +81,18 @@ class PropertyService
 
     public function exclude($property, \Doctrine\ORM\PersistentCollection $feedProductProperty)
     {
-        $criteria = Criteria::create();
-        $criteria->where(Criteria::expr()->eq('name', $property))
-            ->andWhere(Criteria::expr()->andX(Criteria::expr()->neq('listObject', null), Criteria::expr()->neq('dbTableProperty', null)))
-            ->orWhere(Criteria::expr()->eq('active', 0));
-        
-        $matches = $feedProductProperty->matching($criteria);
-        
-        if ($matches->count() >= 1) {
-            return $matches;
+        foreach ($feedProductProperty as $entity) {
+            if ($entity->getActive() == false) {
+                continue;
+            }
+
+            if ($entity->getListObject() !== null) {
+                if ((string) $property === (string) $entity->getName()) {
+                    return $entity;
+                }
+            }
         }
-        
+
         return false;
     }
 
@@ -115,96 +114,74 @@ class PropertyService
         $properties = $product->getProperty();
         
         foreach ($data as $key => $value) {
-            $query = $this->entityManager->createQuery("SELECT property FROM Application\Entity\Property property WHERE property.name = :property AND property.product = :product");
-            $query->setParameters([
-                'product' => $product,
-                'property' => $key
-            ]);
-            
-            $property = $query->getOneOrNullResult();
-            
-            if ($property === null) {
-                if (false == ($element = $this->exclude($key, $feedProductPropertyCollection))) {
-                    \Doctrine\Common\Util\Debug::dump($element);
-                    die('Create new property');
-                }
-            } else {
-                if ($property->getValue() !== $value) {
-                    if ($element->first()->getModifiedDate() > $element->first()
-                        ->getFeed()
-                        ->getLastRun()) {
+            if (false === ($entity = $this->exclude($key, $feedProductPropertyCollection))) {} else {
+                if (in_array($key, [
+                    'brand',
+                    'brand_logo'
+                ])) {
+                    $setter = 'set' . ucfirst($entity->getDbTableProperty());
+                    
+                    if ($product->getBrand()->count() < 1) {
+                        $brand = new Brand();
+                        $brand->$setter($value);
                         
-                        if (in_array($key, [
-                            'brand',
-                            'brand_logo'
-                        ])) {
-                            $setter = 'set' . ucfirst($element->first()->getDbTableProperty());
-                            
-                            if ($product->getBrand()->count() < 1) {
-                                $brand = new Brand();
-                                $brand->$setter($value);
-                                
-                                $product->addBrand($brand);
-                            } else {
-                                $brand = $product->getBrand()->first();
-                                $brand->$setter($value);
-                            }
-                            
-                            $matchedProperty = true;
-                        } elseif (in_array($key, [
-                            'latitude',
-                            'longitude'
-                        ])) {
-                            $setter = 'set' . ucfirst($element->first()->getDbTableProperty());
-                            
-                            if ($product->getAccommodation()->count() < 1) {
-                                $accommodation = new Accommodation();
-                                $accommodation->$setter($value);
-                                
-                                $product->addAccommodation($accommodation);
-                            } else {
-                                $accommodation = $product->getAccommodation()->first();
-                                $accommodation->$setter($value);
-                            }
-                            
-                            $matchedProperty = true;
-                        } elseif ($key == 'link') {
-                            $setter = 'set' . ucfirst($element->first()->getDbTableProperty());
-                            
-                            $product->$setter($value);
-                            
-                            $matchedProperty = true;
-                        } elseif ($key == 'description') {
-                            $setter = 'set' . ucfirst($element->first()->getDbTableProperty());
-                            
-                            $product->$setter($value);
-                            
-                            $matchedProperty = true;
-                        } elseif ($key == 'title') {
-                            $setter = 'set' . ucfirst($element->first()->getDbTableProperty());
-                            
-                            $product->$setter($value);
-                            
-                            $matchedProperty = true;
-                        } elseif ($key == 'price') {
-                            $setter = 'set' . ucfirst($element->first()->getDbTableProperty());
-                            
-                            $product->$setter($value);
-                            
-                            $matchedProperty = true;
-                        }
-                        
-                        $changed = true;
+                        $product->addBrand($brand);
+                    } else {
+                        $brand = $product->getBrand()->first();
+                        $brand->$setter($value);
                     }
+                    
+                    $matchedProperty = true;
+                } elseif (in_array($key, [
+                    'latitude',
+                    'longitude'
+                ])) {
+                    $setter = 'set' . ucfirst($entity->getDbTableProperty());
+                    
+                    if ($product->getAccommodation()->count() < 1) {
+                        $accommodation = new Accommodation();
+                        $accommodation->$setter($value);
+                        
+                        $product->addAccommodation($accommodation);
+                    } else {
+                        $accommodation = $product->getAccommodation()->first();
+                        $accommodation->$setter($value);
+                    }
+                    
+                    $matchedProperty = true;
+                } elseif ($key == 'link') {
+                    $setter = 'set' . ucfirst($entity->getDbTableProperty());
+                    
+                    $product->$setter($value);
+                    
+                    $matchedProperty = true;
+                } elseif ($key == 'description') {
+                    $setter = 'set' . ucfirst($entity->getDbTableProperty());
+                    
+                    $product->$setter($value);
+                    
+                    $matchedProperty = true;
+                } elseif ($key == 'title') {
+                    $setter = 'set' . ucfirst($entity->getDbTableProperty());
+                    
+                    $product->$setter($value);
+                    
+                    $matchedProperty = true;
+                } elseif ($key == 'price') {
+                    $setter = 'set' . ucfirst($entity->getDbTableProperty());
+                    
+                    $product->$setter($value);
+                    
+                    $matchedProperty = true;
                 }
+                
+                $changed = true;
             }
         }
         
         if ($changed === true) {
             return $product;
         }
-        
-        // $this->entityManager->clear();
         
         return false;
     }

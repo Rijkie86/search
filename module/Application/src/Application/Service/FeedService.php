@@ -6,6 +6,7 @@ use Application\Entity\FeedCategory;
 use Application\Entity\FeedCategoryValue;
 use Doctrine\Common\Collections\Criteria;
 use Zend\Permissions\Acl\Resource\ResourceInterface;
+use Doctrine\ORM\EntityManager;
 
 class FeedService implements ResourceInterface
 {
@@ -101,7 +102,7 @@ class FeedService implements ResourceInterface
             die();
         }
     }
-    
+
     public function updateFeedProductProperty(\Application\Entity\FeedProductProperty $feedProductProperty)
     {
         try {
@@ -212,6 +213,37 @@ class FeedService implements ResourceInterface
         }
         
         return $valueOptions;
+    }
+
+    public function inactivateProperties($feedId, $properties)
+    {
+        $updateProperties = [];
+        foreach ($properties as $key => $value) {
+            if ($value === false) {
+                $updateProperties[] = $key;
+            }
+        }
+        
+        $i = 1;
+        $batchSize = count($updateProperties);
+        
+        $query = $this->entityManager->createQuery('SELECT feedProductProperty FROM Application\Entity\FeedProductProperty feedProductProperty WHERE feedProductProperty.name IN(\'' . implode('\',\'', $updateProperties) . '\') AND feedProductProperty.feed = ' . $feedId);
+        
+        $iterableResult = $query->iterate();
+        foreach ($iterableResult as $row) {
+            $feedProductProperty = $row[0];
+            $feedProductProperty->setActive(false)->setLocked(true);
+            
+            if (($i % $batchSize) === 0) {
+                $this->entityManager->flush();
+                $this->entityManager->clear();
+            }
+            
+            ++ $i;
+        }
+        
+        $this->entityManager->flush();
+        $this->entityManager->clear();
     }
 
     public function updateLastRun($feedId, $datetime)

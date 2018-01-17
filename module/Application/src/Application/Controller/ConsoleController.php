@@ -25,6 +25,10 @@ class ConsoleController extends AbstractActionController
 
     private $productService;
 
+    private $feedId = null;
+
+    private $productProperties = null;
+
     public function __construct($feedService, $categoryService, $productService, $entityManager)
     {
         $this->feedService = $feedService;
@@ -32,6 +36,14 @@ class ConsoleController extends AbstractActionController
         $this->productService = $productService;
         
         $this->entityManager = $entityManager;
+    }
+
+    public function __destruct()
+    {
+        $this->feedService->inactivateProperties($this->feedId, $this->productProperties);
+        
+        $this->feedId = null;
+        $this->productProperties = null;
     }
 
     public function promotioncodeAction()
@@ -203,6 +215,12 @@ class ConsoleController extends AbstractActionController
                     
                     $productImages = $this->feedService->getProductImages($productNode);
                     $productProperties = $this->feedService->getProductProperties($productNode);
+                    
+                    if ($this->productProperties == null) {
+                        $this->feedId = $feedId;
+                        $this->productProperties = array_fill_keys(array_keys($productProperties), false);
+                    }
+                    
                     $productCategories = $this->feedService->getProductCategories($productNode);
                     
                     $productEntity = $this->productService->findOneBy([
@@ -357,8 +375,19 @@ class ConsoleController extends AbstractActionController
         return $this->productService->create($productEntity);
     }
 
+    private function test($productProperties)
+    {
+        foreach ($productProperties as $key => $value) {
+            if (trim($value) !== '') {
+                $this->productProperties[$key] = true;
+            }
+        }
+    }
+
     private function update($productEntity, $productProperties, $productImages, $productCategories)
     {
+        $this->test($productProperties);
+        
         $this->productService->updateProperties($productEntity, $productProperties);
         $this->productService->updateImages($productEntity, $productImages);
         $this->productService->updateCategories($productEntity, $productCategories);
