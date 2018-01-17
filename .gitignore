@@ -1,11 +1,7 @@
 .vagrant/
 vendor/
 config/development.config.php
-<<<<<<< HEAD
 data/*
-=======
-data/cache/*
-data/DoctrineORMModule/*
->>>>>>> 0ef90f62883cf62acb89f06df3d059ac05a65e1b
+public/xml/
 !data/cache/.gitkeep
 phpunit.xml
