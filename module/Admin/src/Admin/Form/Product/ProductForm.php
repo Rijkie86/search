@@ -45,6 +45,36 @@ class ProductForm extends Form
         ));
         
         $this->add(array(
+            'type' => 'Zend\Form\Element\Number',
+            'name' => 'priceOld',
+            'attributes' => array(
+                'class' => 'form-control input-sm',
+                'placeholder' => 'Price'
+            )
+        ));
+        
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Checkbox',
+            'name' => 'inStock',
+            'attributes' => array(
+                'placeholder' => 'In stock'
+            ),
+            'options' => [
+                'checked_value' => 1,
+                'unchecked_value' => 0
+            ]
+        ));
+        
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Text',
+            'name' => 'ean',
+            'attributes' => array(
+                'class' => 'form-control input-sm',
+                'placeholder' => 'EAN'
+            )
+        ));
+        
+        $this->add(array(
             'type' => 'Zend\Form\Element\Collection',
             'name' => 'property',
             'options' => array(

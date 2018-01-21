@@ -30,6 +30,7 @@
                                                 </button>
                                                 <ul class="dropdown-menu">
                                                     <li><a href="javascript:" onclick="location.href = \'/admin/feed/properties/' . $feed->getId() . '\'">View properties</a></li>
+                                                    <li><a href="javascript:" onclick="$(this).schedule(\'/admin/feed/schedule/' . $feed->getId() . '\');">Schedule</a></li>
                                                     <li role="separator" class="divider"></li>
                                                     <li><a style="color: red;" href="#">Disable</a></li>
                                                 </ul>
@@ -63,6 +64,12 @@ $this->inlinescript()->captureStart();
 echo <<<JS
     $(document).ready(function(){
        $('table').DataTable();
+
+        $.fn.schedule = function(url) {
+            $.post(url, function(data) {
+                console.log(data);
+            });
+        };
     })
 JS;
 $this->inlinescript()->captureEnd();

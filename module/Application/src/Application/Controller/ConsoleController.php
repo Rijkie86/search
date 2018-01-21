@@ -25,22 +25,28 @@ class ConsoleController extends AbstractActionController
 
     private $productService;
 
+    private $entityManager;
+
+    private $elasticsearchService;
+
     private $feedId = null;
 
     private $productProperties = null;
 
-    public function __construct($feedService, $categoryService, $productService, $entityManager)
+    public function __construct($feedService, $categoryService, $productService, $entityManager, $elasticsearchService)
     {
         $this->feedService = $feedService;
         $this->categoryService = $categoryService;
         $this->productService = $productService;
-        
         $this->entityManager = $entityManager;
+        $this->elasticsearchService = $elasticsearchService;
     }
 
     public function __destruct()
     {
-        $this->feedService->inactivateProperties($this->feedId, $this->productProperties);
+        if ($this->feedId !== null && $this->productProperties !== null) {
+            $this->feedService->inactivateProperties($this->feedId, $this->productProperties);
+        }
         
         $this->feedId = null;
         $this->productProperties = null;
@@ -360,6 +366,26 @@ class ConsoleController extends AbstractActionController
                     
                     $matchedProperty = true;
                 }
+            } elseif ($key == 'ean') {
+                if ($exists) {
+                    $setter = 'set' . ucfirst($element->first()->getDbTableProperty());
+                    
+                    $productEntity->$setter($value);
+                    
+                    $matchedProperty = true;
+                }
+            } elseif ($key == 'in_stock') {
+                if ($exists) {
+                    $dbTableProperty = preg_replace_callback("/(?:^|_)([a-z])/", function ($matches) {
+                        return strtoupper($matches[1]);
+                    }, $element->first()->getDbTableProperty());
+                    
+                    $setter = 'set' . ucfirst($dbTableProperty);
+                    
+                    $productEntity->$setter((bool) $value);
+                    
+                    $matchedProperty = true;
+                }
             }
             
             if ($matchedProperty == false) {
@@ -422,5 +448,10 @@ class ConsoleController extends AbstractActionController
         $client->indices()->delete([
             'index' => 'productsearch'
         ]);
+    }
+
+    public function mappingAction()
+    {
+        $this->elasticsearchService->mapping();
     }
 }

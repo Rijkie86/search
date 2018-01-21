@@ -14,6 +14,7 @@ class ProductFilter extends Form implements ObjectManagerAwareInterface
             'type' => 'DoctrineModule\Form\Element\ObjectSelect',
             'name' => 'feed',
             'attributes' => [
+                'id' => 'feed',
                 'class' => 'form-control input-xs'
             ],
             'options' => [

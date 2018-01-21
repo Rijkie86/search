@@ -19,6 +19,13 @@ class FeedDelivery
      *      @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="description", type="string", length=255, nullable=true)
+     */
+    private $description;
 
     /**
      *
@@ -61,5 +68,29 @@ class FeedDelivery
     public function getFeed()
     {
         return $this->feed;
+    }
+
+    /**
+     * Set description
+     *
+     * @param string $description
+     *
+     * @return FeedDelivery
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
     }
 }

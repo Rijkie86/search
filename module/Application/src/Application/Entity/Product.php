@@ -68,6 +68,25 @@ class Product
      * @var string @ORM\Column(name="price", type="decimal", precision=7, scale=2, nullable=true)
      */
     private $price;
+    
+    /**
+     *
+     * @var string @ORM\Column(name="price_old", type="decimal", precision=7, scale=2, nullable=true)
+     */
+    private $priceOld;
+    
+    /**
+     *
+     * @var string @ORM\Column(name="ean", type="string", length=255, nullable=true)
+     */
+    private $ean;
+    
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="in_stock", type="boolean", nullable=true)
+     */
+    private $inStock;
 
     /**
      *
@@ -745,5 +764,77 @@ class Product
     public function getAccommodation()
     {
         return $this->accommodation;
+    }
+
+    /**
+     * Set ean
+     *
+     * @param string $ean
+     *
+     * @return Product
+     */
+    public function setEan($ean)
+    {
+        $this->ean = $ean;
+
+        return $this;
+    }
+
+    /**
+     * Get ean
+     *
+     * @return string
+     */
+    public function getEan()
+    {
+        return $this->ean;
+    }
+
+    /**
+     * Set priceOld
+     *
+     * @param string $priceOld
+     *
+     * @return Product
+     */
+    public function setPriceOld($priceOld)
+    {
+        $this->priceOld = $priceOld;
+
+        return $this;
+    }
+
+    /**
+     * Get priceOld
+     *
+     * @return string
+     */
+    public function getPriceOld()
+    {
+        return $this->priceOld;
+    }
+
+    /**
+     * Set inStock
+     *
+     * @param boolean $inStock
+     *
+     * @return Product
+     */
+    public function setInStock($inStock)
+    {
+        $this->inStock = $inStock;
+
+        return $this;
+    }
+
+    /**
+     * Get inStock
+     *
+     * @return boolean
+     */
+    public function getInStock()
+    {
+        return $this->inStock;
     }
 }

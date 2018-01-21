@@ -23,7 +23,7 @@ class PropertyService
 
     public function findOneBy(array $properties)
     {
-        // return $this->entityManager->getRepository('Application\Entity\Product')->findOneBy($properties);
+        return $this->entityManager->getRepository('Application\Entity\Property')->findOneBy($properties);
     }
 
     public function findAll()
@@ -85,14 +85,14 @@ class PropertyService
             if ($entity->getActive() == false) {
                 continue;
             }
-
+            
             if ($entity->getListObject() !== null) {
                 if ((string) $property === (string) $entity->getName()) {
                     return $entity;
                 }
             }
         }
-
+        
         return false;
     }
 
@@ -107,14 +107,16 @@ class PropertyService
     {
         $feedProductPropertyCollection = $product->getFeed()->getFeedProductProperty();
         
-        $property = null;
-        
         $changed = false;
         
         $properties = $product->getProperty();
         
         foreach ($data as $key => $value) {
             if (false === ($entity = $this->exclude($key, $feedProductPropertyCollection))) {} else {
+                if ($product->getFeed()->getLastRun() > $entity->getModifiedDate()) {
+                    continue;
+                }
+
                 if (in_array($key, [
                     'brand',
                     'brand_logo'
@@ -131,7 +133,12 @@ class PropertyService
                         $brand->$setter($value);
                     }
                     
-                    $matchedProperty = true;
+                    $property = $this->findOneBy([
+                        'product' => $product,
+                        'name' => $key
+                    ]);
+                    
+                    $this->delete($property);
                 } elseif (in_array($key, [
                     'latitude',
                     'longitude'
@@ -148,31 +155,120 @@ class PropertyService
                         $accommodation->$setter($value);
                     }
                     
-                    $matchedProperty = true;
+                    $property = $this->findOneBy([
+                        'product' => $product,
+                        'name' => $key
+                    ]);
+                    
+                    $this->delete($property);
+                } elseif ($key == 'delivery_description') {
+//                     $dbTableProperty = preg_replace_callback("/(?:^|_)([a-z])/", function ($matches) {
+//                         return strtoupper($matches[1]);
+//                     }, $entity->getDbTableProperty());
+
+//                     $setter = 'set' . ucfirst($dbTableProperty);
+                    
+//                     if ($product->getAccommodation()->count() < 1) {
+//                         $accommodation = new Accommodation();
+//                         $accommodation->$setter($value);
+                        
+//                         $product->addAccommodation($accommodation);
+//                     } else {
+//                         $accommodation = $product->getAccommodation()->first();
+//                         $accommodation->$setter($value);
+//                     }
+                    
+//                     $property = $this->findOneBy([
+//                         'product' => $product,
+//                         'name' => $key
+//                     ]);
+                    
+//                     $this->delete($property);
                 } elseif ($key == 'link') {
                     $setter = 'set' . ucfirst($entity->getDbTableProperty());
                     
                     $product->$setter($value);
                     
-                    $matchedProperty = true;
+                    $property = $this->findOneBy([
+                        'product' => $product,
+                        'name' => $key
+                    ]);
+                    
+                    $this->delete($property);
                 } elseif ($key == 'description') {
                     $setter = 'set' . ucfirst($entity->getDbTableProperty());
                     
                     $product->$setter($value);
                     
-                    $matchedProperty = true;
+                    $property = $this->findOneBy([
+                        'product' => $product,
+                        'name' => $key
+                    ]);
+                    
+                    $this->delete($property);
                 } elseif ($key == 'title') {
                     $setter = 'set' . ucfirst($entity->getDbTableProperty());
                     
                     $product->$setter($value);
                     
-                    $matchedProperty = true;
+                    $property = $this->findOneBy([
+                        'product' => $product,
+                        'name' => $key
+                    ]);
+                    
+                    $this->delete($property);
                 } elseif ($key == 'price') {
                     $setter = 'set' . ucfirst($entity->getDbTableProperty());
                     
                     $product->$setter($value);
                     
-                    $matchedProperty = true;
+                    $property = $this->findOneBy([
+                        'product' => $product,
+                        'name' => $key
+                    ]);
+                    
+                    $this->delete($property);
+                } elseif ($key == 'price_old') {
+                    $dbTableProperty = preg_replace_callback("/(?:^|_)([a-z])/", function ($matches) {
+                        return strtoupper($matches[1]);
+                    }, $entity->getDbTableProperty());
+                    
+                    $setter = 'set' . ucfirst($dbTableProperty);
+                    
+                    $product->$setter($value);
+                    
+                    $property = $this->findOneBy([
+                        'product' => $product,
+                        'name' => $key
+                    ]);
+                    
+                    $this->delete($property);
+                } elseif ($key == 'ean') {
+                    $setter = 'set' . ucfirst($entity->getDbTableProperty());
+                    
+                    $product->$setter($value);
+                    
+                    $property = $this->findOneBy([
+                        'product' => $product,
+                        'name' => $key
+                    ]);
+                    
+                    $this->delete($property);
+                } elseif ($key == 'in_stock') {
+                    $dbTableProperty = preg_replace_callback("/(?:^|_)([a-z])/", function ($matches) {
+                        return strtoupper($matches[1]);
+                    }, $entity->getDbTableProperty());
+
+                    $setter = 'set' . ucfirst($dbTableProperty);
+                    
+                    $product->$setter($value);
+                    
+                    $property = $this->findOneBy([
+                        'product' => $product,
+                        'name' => $key
+                    ]);
+                    
+                    $this->delete($property);
                 }
                 
                 $changed = true;
@@ -186,6 +282,13 @@ class PropertyService
         return false;
     }
 
-    public function delete()
-    {}
+    public function delete($property)
+    {
+        if ($property === null) {
+            return;
+        }
+        
+        $this->entityManager->remove($property);
+        $this->entityManager->flush();
+    }
 }

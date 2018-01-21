@@ -6,16 +6,33 @@ echo $this->form()->openTag($this->form);
 ?>
 <div class="box-body">
 	<div class="form-group">
-		<label>Naam</label> <?php echo $this->formrow($this->form->get('name')); ?>
+		<label>Naam</label>
+		<?php echo $this->formrow($this->form->get('name')); ?>
 	</div>
 	<div class="form-group">
-		<label>Description</label> <?php echo $this->formrow($this->form->get('description')); ?>
+		<label>Description</label>
+		<?php echo $this->formrow($this->form->get('description')); ?>
 	</div>
 	<div class="form-group">
-		<label>Url</label> <?php echo $this->formrow($this->form->get('url')); ?>
+		<label>Url</label><br />
+		<a href="<?php echo $this->form->getObject()->getUrl(); ?>" target="_blank">
+			Visit the website
+		</a>
 	</div>
 	<div class="form-group">
-		<label>Price</label> <?php echo $this->formrow($this->form->get('price')); ?>
+		<label>Price</label>
+		<?php echo $this->formrow($this->form->get('price')); ?>
+	</div>
+	<div class="form-group">
+		<label>Old price</label>
+		<?php echo $this->formrow($this->form->get('priceOld')); ?>
+	</div>
+	<div class="form-group">
+		<label class="checkbox">In stock</label>
+		<?php echo $this->formcheckbox($this->form->get('inStock')); ?>
+	</div>
+	<div class="form-group">
+		<label>EAN</label> <?php echo $this->formrow($this->form->get('ean')); ?>
 	</div>
     <?php
     if ($this->productEntity->getAccommodation()->count() > 0) {

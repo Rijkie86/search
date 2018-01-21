@@ -49,6 +49,7 @@ return [
             'boltSizeFieldset' => Form\Bolt\Factory\BoltSizeFieldsetFactory::class,
             'productFilter' => Filter\Product\Factory\ProductFilterFactory::class,
             'productForm' => Form\Product\Factory\ProductFormFactory::class,
+            'propertiesFilter' => Filter\Feed\Factory\PropertiesFilterFactory::class,
             'propertyFieldset' => Form\Product\Factory\PropertyFieldsetFactory::class,
             'workItemForm' => Form\WorkItem\Factory\WorkItemFormFactory::class
         ]

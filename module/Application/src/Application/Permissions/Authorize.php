@@ -44,10 +44,11 @@ class Authorize extends Acl
             
             'reset-password',
             
-            'feed-view',
             'feed-create',
-            'feed-view-properties',
             'feed-link-properties',
+            'feed-schedule',
+            'feed-view',
+            'feed-view-properties',
             
             'todo-close',
             'todo-create',

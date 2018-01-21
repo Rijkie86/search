@@ -15,7 +15,7 @@ class ElasticsearchService
         ])->build();
     }
 
-    public function createMapping()
+    public function mapping()
     {
         $params = [
             'index' => 'productsearch',
@@ -32,6 +32,13 @@ class ElasticsearchService
                             ],
                             'name' => [
                                 'type' => 'keyword'
+                            ],
+                            'ean' => [
+                                'type' => 'long'
+                            ],
+                            'price' => [
+                                'type' => 'scaled_float',
+                                'scaling_factor' => 100
                             ]
                         ]
                     ]
@@ -43,7 +50,24 @@ class ElasticsearchService
             'index' => 'productsearch'
         ])) {
             $this->client->indices()->create($params);
+        } else {
+            $this->client->indices()->putMapping($params);
         }
+    }
+
+    public function document($product)
+    {
+        return [
+            'suggest' => [
+                'input' => [
+                    (string) $this->product->getId(),
+                    $this->product->getName()
+                ]
+            ],
+            'name' => $this->product->getName(),
+            'ean' => (int) $this->product->getEan(),
+            'price' => $this->product->getPrice(),
+        ];
     }
 
     public function createDocument()
@@ -56,14 +80,7 @@ class ElasticsearchService
             'index' => 'productsearch',
             'type' => 'product',
             'id' => $this->product->getId(),
-            'body' => [
-                'suggest' => [
-                    'input' => [
-                        (string) $this->product->getId(),
-                        $this->product->getName()
-                    ]
-                ]
-            ]
+            'body' => $this->document($this->product)
         ];
         
         $this->client->index($document);
@@ -71,23 +88,24 @@ class ElasticsearchService
 
     public function editDocument()
     {
+        if ($this->product == null) {
+            throw new \Exception('Product entity cannot be null.');
+        }
+        
         $document = [
             'index' => 'productsearch',
             'type' => 'product',
             'id' => $this->product->getId(),
             'body' => [
-                'doc' => [
-                    'suggest' => [
-                        'input' => [
-                            (string) $this->product->getId(),
-                            $this->product->getName()
-                        ]
-                    ]
-                ]
+                'doc' => $this->document($this->product)
             ]
         ];
         
-        $this->client->update($document);
+        try {
+            $this->client->update($document);
+        } catch (\Elasticsearch\Common\Exceptions\Missing404Exception $e) {
+            $this->createDocument();
+        }
     }
 
     public function setProduct(\Application\Entity\Product $product)

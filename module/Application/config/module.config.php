@@ -248,6 +248,15 @@ return array(
                         )
                     )
                 ),
+                'mapping' => array(
+                    'options' => array(
+                        'route' => 'mapping',
+                        'defaults' => array(
+                            'controller' => 'console',
+                            'action' => 'mapping'
+                        )
+                    )
+                ),
                 'update-feed-list' => array(
                     'options' => array(
                         'route' => 'update-feed-list',

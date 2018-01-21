@@ -17,7 +17,9 @@ class ConsoleControllerFactory implements FactoryInterface
         $productService = $container->get('productService');
         
         $entityManager = $container->get('Doctrine\ORM\EntityManager');
+        
+        $elasticsearchService = $container->get('elasticsearchService');
 
-        return new ConsoleController($feedService, $categoryService, $productService, $entityManager);
+        return new ConsoleController($feedService, $categoryService, $productService, $entityManager, $elasticsearchService);
     }
 }

@@ -246,6 +246,22 @@ class FeedService implements ResourceInterface
         $this->entityManager->clear();
     }
 
+    public function schedule($feedId)
+    {
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        
+        $query = $queryBuilder->update('Application\Entity\FeedProductProperty', 'feedProductProperty')
+            ->set('feedProductProperty.modifiedDate', ':now')
+            ->where('feedProductProperty.feed = ?1')
+            ->setParameters([
+            1 => $feedId,
+            'now' => new \DateTime('now')
+        ])
+            ->getQuery();
+        
+        $query->execute();
+    }
+
     public function updateLastRun($feedId, $datetime)
     {
         $feed = $this->findOneBy([

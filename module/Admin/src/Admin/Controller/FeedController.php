@@ -124,14 +124,17 @@ class FeedController extends AbstractActionController implements ResourceInterfa
             return false;
         }
         
+        $filter = $this->formElementManager->get('propertiesFilter');
+        
         $feed = $this->feedService->findOneBy([
             'id' => $this->getEvent()
                 ->getRouteMatch()
                 ->getParam('id', null)
         ]);
-        
+
         return new ViewModel(array(
-            'feed' => $feed
+            'feed' => $feed,
+            'filter' => $filter
         ));
     }
 
@@ -155,11 +158,12 @@ class FeedController extends AbstractActionController implements ResourceInterfa
         
         $criteria = Criteria::create()->where(Criteria::expr()->eq('id', $propertyId));
         
-        $feedProductProperty = $feed->getFeedProductProperty();
+        $feedProductPropertyCollection = $feed->getFeedProductProperty();
+        
+        $feedProductProperty = $feedProductPropertyCollection->matching($criteria)->first();
         
         $form = $this->formElementManager->get('linkForm');
-        $form->bind($feedProductProperty->matching($criteria)
-            ->first());
+        $form->bind($feedProductProperty);
         
         $request = $this->getRequest();
         if ($request->isPost()) {
@@ -176,8 +180,7 @@ class FeedController extends AbstractActionController implements ResourceInterfa
             'form' => $form,
             'feedId' => $feedId,
             'propertyId' => $propertyId,
-            'feedProductProperty' => $feedProductProperty->matching($criteria)
-                ->first()
+            'feedProductProperty' => $feedProductProperty
         ]);
         
         return $viewModel;
@@ -246,6 +249,25 @@ class FeedController extends AbstractActionController implements ResourceInterfa
             ->getParam('id'));
         
         $viewModel = new JsonModel($data);
+        
+        return $viewModel;
+    }
+
+    public function scheduleAction()
+    {
+        if (! $this->isAllowed($this, 'feed-schedule')) {
+            return false;
+        }
+        
+        $feedId = $this->getEvent()
+            ->getRouteMatch()
+            ->getParam('id');
+        
+        $this->feedService->schedule($feedId);
+        
+        $viewModel = new JsonModel([
+            'response' => true
+        ]);
         
         return $viewModel;
     }

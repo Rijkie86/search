@@ -37,6 +37,17 @@ class IndexController extends AbstractActionController
                 'index' => 'productsearch',
                 'type' => 'product',
                 'body' => [
+                    'query' => [
+                        'bool' => [
+                            'must' => [
+                                [
+                                    'match' => [
+                                        'ean' => (int) $this->params()->fromPost('q')
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ],
                     "suggest" => [
                         "song-suggest" => [
                             "prefix" => (string) $this->params()->fromPost('q'),
@@ -50,7 +61,7 @@ class IndexController extends AbstractActionController
                     ]
                 ]
             ];
-
+            
             $results = $client->search($params);
             
             $viewModel = new ViewModel();
